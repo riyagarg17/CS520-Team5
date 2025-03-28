@@ -1,5 +1,5 @@
 import express from "express";
-import router from "../backend/routes.js";
+import router from "./routes/routes.js";
 
 const PORT = 3000; 
 

@@ -1,0 +1,78 @@
+/* Container for centering the form */
+.registration-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 86vh;
+    background: #f0f2f5;
+    overflow-y: auto;
+}
+
+/* Form Styling */
+.registration-form {
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Header Styling */
+.registration-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+/* Form Item Padding */
+.form-item {
+    margin-bottom: 16px;
+}
+
+/* Switch Role Button Styling */
+.switch-role-button {
+    text-align: center;
+    margin-top: 16px;
+}
+
+/* Additional Styles for Heading of Role */
+.role-heading {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Styling for the buttons in the role selection */
+.role-selection-buttons .ant-btn {
+    display: block;
+    text-align: center;
+    width: 400px; /* Let the width adjust according to content */
+    height: 50px; /* Increase the height */
+    font-size: 16px; /* Adjust font size */
+    margin: 10px; /* Add space between buttons */
+    border-radius: 8px; /* Round the corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+/* Active button styling (Patient or Doctor selection) */
+.role-selection-buttons .ant-btn-primary {
+    background-color: #4CAF50; /* Green background for active button */
+    border-color: #4CAF50; /* Matching border color */
+}
+
+/* Inactive button styling (Other role) */
+.role-selection-buttons .ant-btn-default {
+    background-color: #f0f0f0; /* Light background for inactive button */
+    border-color: #d9d9d9; /* Light border color */
+    color: #595959; /* Dark text for inactive button */
+}
+
+/* Hover effects for the active button */
+.role-selection-buttons .ant-btn:hover {
+    background-color: #45a049; /* Darker green for hover effect */
+    border-color: #45a049; /* Darker border for active button hover */
+}
+
+/* Hover effects for the inactive button */
+.role-selection-buttons .ant-btn-default:hover {
+    background-color: #e6e6e6; /* Lighter background for hover */
+    border-color: #c0c0c0; /* Lighter border for inactive button hover */
+}

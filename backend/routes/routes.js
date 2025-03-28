@@ -1,5 +1,5 @@
 import express from "express"; 
-import {createPatient, updatePatientById, getPatientById, deletePatientById} from "../backend/controllers/PatientControllers.js";
+import {createPatient, updatePatientById, getPatientById, deletePatientById} from "../controllers/PatientControllers.js";
 
 
 const router = express.Router(); 
