@@ -1,33 +1,33 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Checkbox, Select, notification } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Select, notification, Spin } from "antd";
+import { LockOutlined, MailOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ENDPOINTS } from "../api/endpoint";
 import { useUserContext } from "../context/UserContext";
+import Lottie from "lottie-react";
+import doctorAnimation from "../assets/doctor-lottie.json";
+import logo from "../assets/logo.png";
+import "../styles/LoginPage.css";
 
 const LoginPage = () => {
-    const [role, setRole] = useState(""); // State to track the selected role
+    const [role, setRole] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { user, setUser } = useUserContext();
+    const { setUser } = useUserContext();
     const location = useLocation();
 
-    // Handle the change in role selection
     const handleRoleChange = (value) => {
-        setRole(value); // Update the selected role
+        setRole(value);
     };
 
-    // Handle form submission
     const onFinish = (values) => {
+        setLoading(true);
         const { password, email } = values;
-
         const params = new URLSearchParams(location.search);
         const isTesting = params.has("test");
-
-        // Define the login URL based on the selected role
         const loginUrl =
             role === "patient" ? ENDPOINTS.patientLogin : ENDPOINTS.doctorLogin;
 
-        // Post the username, password, and email to the respective API endpoint
         fetch(loginUrl, {
             method: "POST",
             headers: {
@@ -38,14 +38,12 @@ const LoginPage = () => {
             .then((response) => response.json())
             .then((data) => {
                 if (data.status_code === 401) {
-                    // If an error is returned (like wrong credentials)
                     notification.error({
                         message: "Login Failed",
                         description: data.detail || "Invalid credentials",
                         duration: 3,
                     });
                 } else {
-                    // On successful login, navigate to the respective dashboard
                     notification.success({
                         message: "Login Successful",
                         description: `Welcome, ${
@@ -62,107 +60,100 @@ const LoginPage = () => {
                 }
             })
             .catch((error) => {
-                // If there's any error during the fetch call
                 console.error("Error:", error);
                 notification.error({
                     message: "Login Failed",
                     description: "Please try again later.",
                     duration: 3,
                 });
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
     return (
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100vh",
-                background: "#f0f2f5",
-            }}
-        >
-            <Form
-                name="login"
-                onFinish={onFinish}
-                style={{ maxWidth: 400, width: "100%" }}
-                layout="vertical"
-            >
-                <h2 style={{ textAlign: "center" }}>Login</h2>
+        <div className="login-container">
+            <div className="floating-shape shape1"></div>
+            <div className="floating-shape shape2"></div>
 
-                {/* Dropdown to select role (Doctor or Patient) */}
-                <Form.Item
-                    name="role"
-                    label="Select Role"
-                    rules={[{ required: true, message: "Please select your role!" }]}
+            <div className="login-card">
+                <Lottie animationData={doctorAnimation} loop={true} className="login-lottie" />
+                <h2 className="login-title">Welcome Back</h2>
+                <p className="login-subtitle">Sign in to manage your health dashboard</p>
+                <Form
+                    name="login"
+                    onFinish={onFinish}
+                    layout="vertical"
                 >
-                    <Select
-                        id="select-role"
-                        placeholder="Select your role"
-                        onChange={handleRoleChange}
-                        value={role}
+                    <Form.Item
+                        name="role"
+                        label="Select Role"
+                        rules={[{ required: true, message: "Please select your role!" }]}
                     >
-                        <Select.Option id="doctor" value="doctor">
-                            Doctor
-                        </Select.Option>
-                        <Select.Option id="patient" value="patient">
-                            Patient
-                        </Select.Option>
-                    </Select>
-                </Form.Item>
+                        <Select
+                            id="select-role"
+                            placeholder="Select your role"
+                            onChange={handleRoleChange}
+                            value={role}
+                        >
+                            <Select.Option id="doctor" value="doctor">
+                                Doctor
+                            </Select.Option>
+                            <Select.Option id="patient" value="patient">
+                                Patient
+                            </Select.Option>
+                        </Select>
+                    </Form.Item>
 
-                {/* Email Field */}
-                <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                        { required: true, message: "Please input your email!" },
-                        { type: "email", message: "Please input a valid email!" },
-                    ]}
-                >
-                    <Input
-                        id="login_email"
-                        prefix={<MailOutlined />}
-                        placeholder="Email"
-                    />
-                </Form.Item>
-
-                {/* Password Field */}
-                <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[{ required: true, message: "Please input your password!" }]}
-                >
-                    <Input.Password
-                        id="login_password"
-                        prefix={<LockOutlined />}
-                        placeholder="Password"
-                    />
-                </Form.Item>
-
-                <Form.Item>
-                    <Button
-                        id="login-button"
-                        type="primary"
-                        htmlType="submit"
-                        style={{ width: "100%" }}
+                    <Form.Item
+                        name="email"
+                        label="Email"
+                        rules={[{ required: true, message: "Please input your email!" }, { type: "email", message: "Please input a valid email!" }]}
                     >
-                        Log In
-                    </Button>
-                </Form.Item>
+                        <Input
+                            id="login_email"
+                            prefix={<MailOutlined />}
+                            placeholder="Email"
+                        />
+                    </Form.Item>
 
-                {/* Link to Registration Page */}
-                <Form.Item style={{ textAlign: "center" }}>
-                    <Button
-                        type="link"
-                        id="register-link"
-                        onClick={() => navigate("/register")}
-                        style={{ padding: 0, fontSize: "14px" }}
+                    <Form.Item
+                        name="password"
+                        label="Password"
+                        rules={[{ required: true, message: "Please input your password!" }]}
                     >
-                        Don't have an account yet? Sign Up
-                    </Button>
-                </Form.Item>
-            </Form>
+                        <Input.Password
+                            id="login_password"
+                            prefix={<LockOutlined />}
+                            placeholder="Password"
+                        />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button
+                            id="login-button"
+                            type="primary"
+                            htmlType="submit"
+                            className="login-button"
+                            disabled={loading}
+                        >
+                            {loading ? <Spin indicator={<LoadingOutlined spin />} /> : "Log In"}
+                        </Button>
+                    </Form.Item>
+
+                    <Form.Item style={{ textAlign: "center" }}>
+                        <Button
+                            type="link"
+                            id="register-link"
+                            onClick={() => navigate("/register")}
+                            className="register-link"
+                        >
+                            Don't have an account yet? Sign Up
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </div>
         </div>
     );
 };

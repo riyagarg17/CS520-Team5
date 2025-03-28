@@ -1,48 +1,49 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Image, Layout, Menu } from "antd";
-import SchedulCareLogo from "../images/logo.svg";
+import { Image, Layout, Menu, Typography } from "antd";
+import Logo from "../assets/logo.png";
 
 const { Header } = Layout;
+const { Title } = Typography;
 
 const items1 = [
     { key: "1", label: "Home", to: "/patient" },
     { key: "2", label: "MapView", to: "/MapView" },
-    {
-        key: "3",
-        label: "Chat",
-        to: "/chatassist",
-    },
+    { key: "3", label: "Chat", to: "/chatassist" },
     { key: "4", label: "Doctor", to: "/doctor" },
 ].map((item) => ({
     key: item.key,
     label: item.label,
     to: item.to,
-    heading: item.heading,
 }));
 
 const Navbar = ({ selectedKey }) => {
-    const location = useLocation(); // Use location to get the current path
+    const location = useLocation();
 
     const currentItem = items1.find((item) => item.to === location.pathname);
-    const isRegisterPage = location.pathname === '/register';
-    const isLoginPage = location.pathname === '/login';
-    const isMFAPage = location.pathname === '/mfa/register';
+    const isRegisterPage = location.pathname === "/register";
+    const isLoginPage = location.pathname === "/login";
+    const isMFAPage = location.pathname === "/mfa/register";
 
     selectedKey = currentItem ? currentItem.key : "1";
 
-    // Only render the tabs if the current page is not /register or /login
     if (isRegisterPage || isLoginPage || isMFAPage) {
         return (
-            <Header style={{ display: "flex", alignItems: "center" }}>
-                <Image src={SchedulCareLogo} width={55} />
+            <Header style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <Image src={Logo} width={50} preview={false} />
+                <Title level={4} style={{ color: "white", margin: 0 }}>
+                    CareCompass
+                </Title>
             </Header>
         );
     }
 
     return (
-        <Header style={{ display: "flex", alignItems: "center" }}>
-            <Image src={SchedulCareLogo} width={55} />
+        <Header style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <Image src={Logo} width={50} preview={false} />
+            <Title level={4} style={{ color: "white", margin: 0 }}>
+                CareCompass
+            </Title>
             <Menu
                 theme="dark"
                 mode="horizontal"

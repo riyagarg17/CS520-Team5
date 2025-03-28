@@ -11,7 +11,7 @@ import Navbar from "../../client/src/components/Navbar";
 import LoginPage from "../../client/src/pages/LoginPage";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { UserProvider } from "./context/UserContext";
-
+import RegistrationPage from "./pages/Registration";
 
 const { Content } = Layout;
 
@@ -38,7 +38,7 @@ const App = () => {
                                 <Routes>
                                     <Route path="/" element={<Navigate to="/login" replace />} />{" "}
                                     /*<Route path="/login" element={<LoginPage />} />*/
-
+                                    <Route path="/register" element={<RegistrationPage />} />
                                 </Routes>
                             </div>
                         </div>
