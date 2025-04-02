@@ -8,9 +8,9 @@ const { Title } = Typography;
 
 const items1 = [
     { key: "1", label: "Home", to: "/patient" },
-    { key: "2", label: "MapView", to: "/MapView" },
+    { key: "2", label: "Appointments", to: "/Appointments" },
     { key: "3", label: "Chat", to: "/chatassist" },
-    { key: "4", label: "Doctor", to: "/doctor" },
+    // { key: "4", label: "Doctor", to: "/doctor" },
 ].map((item) => ({
     key: item.key,
     label: item.label,

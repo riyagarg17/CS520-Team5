@@ -112,7 +112,6 @@ const RegistrationPage = () => {
                 dob: values.dob,
                 gender: values.gender,
                 password: values.password,
-                specialisation: values.specialisation,
                 pincode: values.pincode,
             };
             registerDoctor(data)
@@ -358,23 +357,12 @@ const RegistrationPage = () => {
                             </li>
                         </ul>
                     </Form.Item>
+
+
                 )}
 
                 {userType === "doctor" && (
                     <>
-                        <Form.Item
-                            name="specialisation"
-                            label="Specialisation"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please input your specialisation",
-                                },
-                            ]}
-                            className="form-item"
-                        >
-                            <Input id="specialisation" placeholder="Specialisation" />
-                        </Form.Item>
 
                         {
                             <Form.Item
@@ -460,12 +448,12 @@ const RegistrationPage = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="address"
-                            label="Address"
-                            rules={[{ required: true, message: "Please input your address" }]}
+                            name="exp"
+                            label="Years of Experience"
+                            rules={[{ required: true, message: "Please input your number of years of experience" }]}
                             className="form-item"
                         >
-                            <Input id="address" placeholder="Address" />
+                            <Input id="exp" placeholder="0" />
                         </Form.Item>
                     </>
                 )}
