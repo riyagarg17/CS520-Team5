@@ -12,6 +12,11 @@ import LoginPage from "../../client/src/pages/LoginPage";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { UserProvider } from "./context/UserContext";
 import RegistrationPage from "./pages/Registration";
+import PatientPage from "./pages/PatientPage";
+import ScheduleAppointment from "./pages/ScheduleAppointment";
+import ViewAppointments from "./pages/ViewAppointments";
+import DoctorAppointments from "./pages/DoctorAppointments";
+import HealthPage from "./pages/PatientDashboard";
 
 const { Content } = Layout;
 
@@ -37,8 +42,13 @@ const App = () => {
                             <div style={{ padding: "10px", display: "grid" }}>
                                 <Routes>
                                     <Route path="/" element={<Navigate to="/login" replace />} />{" "}
-                                    /*<Route path="/login" element={<LoginPage />} />*/
+                                    <Route path="/login" element={<LoginPage />} />
                                     <Route path="/register" element={<RegistrationPage />} />
+                                    <Route path="/patient" element={<PatientPage />} />
+                                    <Route path="/schedule" element={<ScheduleAppointment />} />
+                                    <Route path="/viewAppointments" element={<ViewAppointments />} />
+                                    <Route path="/patientDashboard" element={<HealthPage />} />
+                                    <Route path="/doctorAppointments" element={<DoctorAppointments />} />
                                 </Routes>
                             </div>
                         </div>
