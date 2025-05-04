@@ -50,7 +50,18 @@ const PatientSchema = new mongoose.Schema({
         required: true
     },
     appointments: [AppointmentSchema],
-    health_details: HealthDetailsSchema
+    health_details: HealthDetailsSchema,
+    mfaSecret: {
+        type: String,
+        default: null
+    },
+    mfaEnabled: {
+        type: Boolean,
+        default: false
+    },
+    mfaBackupCodes: [{
+        type: String
+    }]
 }, { collection: 'Patient' });
 
 const Patient = mongoose.model('Patient', PatientSchema);

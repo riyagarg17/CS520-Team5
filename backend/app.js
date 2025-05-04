@@ -19,7 +19,7 @@ app.get("/", (req,res) => {
     res.send("Hello world");
 });
 
-app.use("/api", router); 
+app.use("/api", router);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
