@@ -60,7 +60,7 @@ exports.updateHealthDetails = async (req, res) => {
 exports.getHealthDetails = async (req, res) => {
   try {
     const { email } = req.body;
-
+    // console.log("get patient details backend: ", req.body)
     if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
@@ -75,5 +75,17 @@ exports.getHealthDetails = async (req, res) => {
   } catch (error) {
     console.error("Error fetching health details:", error);
     res.status(500).json({ message: "Failed to fetch health details." });
+  }
+};
+
+exports.getAppointmentsByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    const patient = await Patient.findOne({ email });
+    if (!patient) return res.status(404).json({ message: "Patient not found" });
+    return res.json(patient.appointments || []);
+  } catch (error) {
+    console.error("Get Appointments Error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 };

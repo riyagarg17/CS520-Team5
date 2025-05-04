@@ -82,7 +82,7 @@ const Patient = () => {
                     extra={<CalendarOutlined style={{ fontSize: 22, color: '#fff' }} />}
                     styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
-                    <p className="card-text">You have 2 upcoming appointments.</p>
+                    <p className="card-text">View/Modify your upcoming appointments.</p>
                     <Button type="default" className="card-button" onClick={() => navigate("/viewAppointments")}>View Appointments</Button>
                 </Card>
 

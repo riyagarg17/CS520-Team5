@@ -18,7 +18,7 @@ export const getPatientHealthDetails = async (email) => {
         },
         body: JSON.stringify({ email }),
       });
-  
+      // console.log("response from backend patient details: ", response)
       if (!response.ok) {
         throw new Error(`Failed to fetch health details: ${response.status}`);
       }
@@ -27,6 +27,15 @@ export const getPatientHealthDetails = async (email) => {
       return data.health_details; 
     } catch (error) {
       console.error("getPatientHealthDetails error:", error);
+      throw error;
+    }
+  };
+
+  export const getAppointmentsByPatient = async (email) => {
+    try {
+      const url = `${ENDPOINTS.getAppointments}?email=${encodeURIComponent(email)}`;
+      return await fetchClient(url);
+    } catch (error) {
       throw error;
     }
   };
