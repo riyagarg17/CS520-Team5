@@ -4,14 +4,17 @@
   "description": "- Ansh Arora  \r - Limbani Chaponda  \r - Riya Garg  \r - Sam O'Nuallain",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "mongoose": "^8.14.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }

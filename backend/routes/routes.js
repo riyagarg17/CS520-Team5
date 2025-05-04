@@ -1,13 +1,18 @@
 import express from "express"; 
-import {createPatient, updatePatientById, getPatientById, deletePatientById} from "../controllers/PatientControllers.js";
-
+import { createPatient, getPatients, getPatientById, updatePatient, deletePatient } from "../controllers/patientController.js";
+import { predictObesityRisk } from "../controllers/obesityRiskController.js";
 
 const router = express.Router(); 
 
-router.post("/addPatient", createPatient);
-router.put("/updatePatient/:id", updatePatientById);
-router.get("/getPatient/:id", getPatientById);
-router.delete("/deletePatient/:id", deletePatientById);
+// Patient routes
+router.post("/patients", createPatient);
+router.get("/patients", getPatients);
+router.get("/patients/:id", getPatientById);
+router.put("/patients/:id", updatePatient);
+router.delete("/patients/:id", deletePatient);
+
+// Obesity risk prediction route
+router.post("/obesity-risk/predict", predictObesityRisk);
 
 /*
 

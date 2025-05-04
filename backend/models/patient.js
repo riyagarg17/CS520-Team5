@@ -1,51 +1,58 @@
-import { Sequelize, DataTypes } from '@sequelize/core';
+import mongoose from 'mongoose';
 
-const sequelize = new Sequelize({
-    dialect: "sqlite",
-    storage: "authentication.sqlite", 
+const AppointmentSchema = new mongoose.Schema({
+    doctor_email: String,
+    doctor_name: String,
+    appointment_date: String,
+    appointment_time: String,
+    status: String
 });
 
-export const Patient = sequelize.define("Patient", { 
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      age: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      role: {
-        type: DataTypes.ENUM("Patient", "Doctor"),
-        allowNull: false,
-      },
-      zone: {
-        type: DataTypes.REAL,
-        validate: {
-          min: -1,
-          max: 1,
-        },
-      },
-      bloodGlucoseLevels: {
-        type: DataTypes.REAL, // mg/DL
-      },
-      bmi: {
-        type: DataTypes.REAL, // kg/m²
-      },
-      bloodPressure: {
-        type: DataTypes.STRING, // e.g., "120/80"
-      },
-      insulinDosage: {
-        type: DataTypes.REAL, // IU
-      },
-    });
-  
-  
+const HealthDetailsSchema = new mongoose.Schema({
+    zone: {
+        type: String,
+        enum: ['Red', 'Yellow', 'Green']
+    },
+    bloodGlucoseLevels: Number,
+    bmi: Number,
+    bloodPressure: String,
+    insulinDosage: Number
+});
 
-await sequelize.sync(); 
+const PatientSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    dob: {
+        type: String,
+        required: true
+    },
+    gender: {
+        type: String,
+        required: true
+    },
+    age: {
+        type: Number,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    pincode: {
+        type: Number,
+        required: true
+    },
+    appointments: [AppointmentSchema],
+    health_details: HealthDetailsSchema
+}, { collection: 'Patient' });
+
+const Patient = mongoose.model('Patient', PatientSchema);
 
 export default Patient; 

@@ -25,4 +25,5 @@ export const ENDPOINTS = {
     doctorByEmail: (email) => `${API_BASE_URL}/doctors/doctor/${email}`,
     getDoctorByEmail: (email) => `${API_BASE_URL}/doctors/${email}/schedule`,
     addAppointmentDetail: `${API_BASE_URL}/appointment/add`,
+    predictObesityRisk: `${API_BASE_URL}/obesity-risk/predict`,
 };
