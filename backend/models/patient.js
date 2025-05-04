@@ -1,51 +1,31 @@
-import { Sequelize, DataTypes } from '@sequelize/core';
+const mongoose = require('mongoose');
 
-const sequelize = new Sequelize({
-    dialect: "sqlite",
-    storage: "authentication.sqlite", 
+const appointmentSchema = new mongoose.Schema({
+    appointment_id: { type: String, required: true },
+    doctor_email: String,
+    doctor_name: String,
+    appointment_date: String,
+    appointment_time: String,
+    status: { type: String, default: 'Pending' }
 });
 
-export const Patient = sequelize.define("Patient", { 
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      age: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      role: {
-        type: DataTypes.ENUM("Patient", "Doctor"),
-        allowNull: false,
-      },
-      zone: {
-        type: DataTypes.REAL,
-        validate: {
-          min: -1,
-          max: 1,
-        },
-      },
-      bloodGlucoseLevels: {
-        type: DataTypes.REAL, // mg/DL
-      },
-      bmi: {
-        type: DataTypes.REAL, // kg/m²
-      },
-      bloodPressure: {
-        type: DataTypes.STRING, // e.g., "120/80"
-      },
-      insulinDosage: {
-        type: DataTypes.REAL, // IU
-      },
-    });
-  
-  
+const healthDetailsSchema = new mongoose.Schema({
+    zone: { type: String, enum: ['Red', 'Yellow', 'Green'], default: 'Green' },
+    bloodGlucoseLevels: Number,
+    bmi: Number,
+    bloodPressure: String,
+    insulinDosage: Number
+});
 
-await sequelize.sync(); 
+const patientSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    name: String,
+    dob: String,
+    gender: String,
+    password: String,
+    pincode: Number,
+    appointments: [appointmentSchema],
+    health_details: healthDetailsSchema,
+}, { collection: 'Patient' })
 
-export default Patient; 
+module.exports = mongoose.model('Patient', patientSchema);

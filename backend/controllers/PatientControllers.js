@@ -1,77 +1,79 @@
-import Patient from "../models/patient.js";
+const bcrypt = require('bcrypt');
+const Patient = require('../models/patient');
 
-export const createPatient = async (req, res) => { 
+exports.registerPatient = async (req, res) => {
+  try {
+    const { email, name, dob, gender, password, pincode } = req.body;
+    console.log("Incoming body:", req.body);
 
-    const { name, age, role } = req.body; 
-
-    try {
-        await Patient.create({ name, age, role });
-        
-        res.status(201).json({ message: "Patient created",
-        patient: { name, age, role } });
-
-    } catch (error) {
-
-        console.error(error); 
-        res.status(500).json({ message: "Server Error" });
-        return; 
-
-    } 
-}
-
-// Get a patient by ID
-export const getPatientById = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const patient = await Patient.findByPk(id);
-        if (!patient) {
-            return res.status(404).json({ message: "Patient not found" });
-        }
-        res.status(200).json(patient);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server Error" });
+    const existingPatient = await Patient.findOne({ email:email });
+    if (existingPatient) {
+      console.log("Patient already exists", existingPatient);
+      return res.status(400).json({ message: 'Email already registered', status_code: 400 });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newPatient = new Patient({
+      email,
+      name,
+      dob,
+      gender,
+      password: hashedPassword,
+      pincode,
+      appointments: [],
+      health_details: {},
+    });
+
+    const savedPatient = await newPatient.save();
+    console.log("New patient saved:", savedPatient);
+
+    return res.status(200).json({ message: 'Patient registered successfully', body: savedPatient });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+    return res.status(500).json({ message: 'Registration failed', error });
+  }
 };
 
-// Update a patient by ID
-export const updatePatientById = async (req, res) => {
-    const { id } = req.params;
-    const { name, age, role, zone, bloodGlucoseLevels, bmi, bloodPressure, insulinDosage } = req.body;
-
-    try {
-        const patient = await Patient.findByPk(id);
-        if (!patient) {
-            return res.status(404).json({ message: "Patient not found" });
-        }
-
-        await patient.update({ name, age, role, zone, bloodGlucoseLevels, bmi, bloodPressure, insulinDosage });
-        res.status(200).json({ message: "Patient updated", patient });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server Error" });
+exports.updateHealthDetails = async (req, res) => {
+  const { email, health_details } = req.body;
+  console.log("Update details: ", req.body)
+  try {
+    const updatedPatient = await Patient.findOneAndUpdate(
+      { email: email }, 
+      { $set: { health_details } },
+      { new: true }
+    );
+  
+    if (!updatedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
     }
+  
+    res.status(200).json({ message: "Health details updated", patient: updatedPatient });
+  } catch (error) {
+    console.error("Update Error:", error);
+    res.status(500).json({ message: "Update failed", error });
+  }
 };
 
-// Delete a patient by ID
-export const deletePatientById = async (req, res) => {
-    const { id } = req.params;
+exports.getHealthDetails = async (req, res) => {
+  try {
+    const { email } = req.body;
 
-    try {
-        const patient = await Patient.findByPk(id);
-        if (!patient) {
-            return res.status(404).json({ message: "Patient not found" });
-        }
-
-        await patient.destroy();
-        res.status(200).json({ message: "Patient deleted" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server Error" });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required." });
     }
+
+    const patient = await Patient.findOne({ email });
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found." });
+    }
+
+    res.status(200).json({ health_details: patient.health_details || {} });
+  } catch (error) {
+    console.error("Error fetching health details:", error);
+    res.status(500).json({ message: "Failed to fetch health details." });
+  }
 };
-
-
-
-export default { createPatient, getPatientById, updatePatientById, deletePatientById };

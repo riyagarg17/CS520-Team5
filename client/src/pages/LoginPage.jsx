@@ -55,7 +55,9 @@ const LoginPage = () => {
                     if (isTesting) {
                         navigate(role === "doctor" ? "/doctor" : "/patient");
                     } else {
-                        navigate(`/mfa/register`);
+                        navigate(role === "doctor" ? "/doctor" : "/patient");
+                        // navigate(`/mfa/register`); 
+                        // Ansh to implement this; only if not testing, uncomment later
                     }
                 }
             })

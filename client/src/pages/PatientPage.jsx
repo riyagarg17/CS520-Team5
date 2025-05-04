@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import "../styles/Patient.css";
-import { Card, Col, Row, Typography, Button, Modal, Form, Input, InputNumber } from "antd";
-import { CalendarOutlined, HeartOutlined, PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Card, Typography, Button, Modal, Form, Input, InputNumber, message, Alert } from "antd";
+import { CalendarOutlined, HeartOutlined, PlusOutlined} from "@ant-design/icons";
 import Lottie from "lottie-react";
 import patientAnimation from "../assets/patient-lottie.json";
 import {useNavigate} from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
+import { updateHealthDetails } from "../api/services/patientService";
+import { notification } from "antd";
 
 const Patient = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -13,13 +16,50 @@ const Patient = () => {
     const showModal = () => setIsModalVisible(true);
     const handleCancel = () => setIsModalVisible(false);
     const { Title } = Typography;
-    const handleFormSubmit = (values) => {
-        console.log("Submitted health data:", values);
-        setIsModalVisible(false);
+    const { user, setUser } = useUserContext(); 
+    const [showAlert, setShowAlert] = useState(false);
+
+    const handleFormSubmit = async (values) => {
+        const payload = {
+            email: user.email,
+            health_details: values
+          };
+      try {
+        const response = await updateHealthDetails(user.email,values);
+        console.log("Form submitted successfully, triggering notification");
+        {showAlert && (
+            <Alert
+              message="Health Details Updated"
+              description="Your health metrics were saved successfully!"
+              type="success"
+              showIcon
+              closable
+              style={{ marginBottom: "16px" }}
+            />
+          )}
+    
+        // Update user context with latest health details
+        setUser((prev) => ({
+          ...prev,
+          health_details: values,
+        }));
+    
+        setShowAlert(true); // show the alert message
+        setTimeout(() => {
+          setShowAlert(false);
+          setIsModalVisible(false); // close modal after delay
+        }, 1500);
+      } catch (error) {
+        notification.error({
+          message: "Update Failed",
+          description: "Could not update your health information. Please try again.",
+        });
+      }
     };
+      
     return (
         <div className="patient-container">
-            <h1 className="patient-header">👋 Welcome to CareCompass, Riya!</h1>
+            <h1 className="patient-header">👋 Welcome to CareCompass, {user?.name || "Patient"}!</h1>
             <p className="patient-subtitle">Your personalized health dashboard</p>
 
             <div className="patient-cards">
@@ -31,7 +71,7 @@ const Patient = () => {
                             <PlusOutlined style={{ fontSize: 20, color: '#fff' }} />
                         </div>
                     }
-                    headStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
+                    styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
                     <p className="card-text">Keep your health information up to date for accurate diagnostics.</p>
                     <Button type="default" className="card-button" onClick={showModal}>Update Now</Button>
@@ -40,7 +80,7 @@ const Patient = () => {
                     className="patient-card gradient-blue"
                     title="Your Appointments"
                     extra={<CalendarOutlined style={{ fontSize: 22, color: '#fff' }} />}
-                    headStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
+                    styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
                     <p className="card-text">You have 2 upcoming appointments.</p>
                     <Button type="default" className="card-button" onClick={() => navigate("/viewAppointments")}>View Appointments</Button>
@@ -50,7 +90,7 @@ const Patient = () => {
                     className="patient-card gradient-green"
                     title="Schedule Appointment"
                     extra={<PlusOutlined style={{ fontSize: 22, color: '#fff' }} />}
-                    headStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
+                    styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
                     <p className="card-text">Book an appointment with your preferred doctor.</p>
                     <Button type="default" className="card-button" onClick={() => navigate("/schedule")}>Schedule Now</Button>
@@ -60,7 +100,7 @@ const Patient = () => {
                     className="patient-card gradient-purple"
                     title="Health Overview"
                     extra={<HeartOutlined style={{ fontSize: 22, color: '#fff' }} />}
-                    headStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
+                    styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
                     <p className="card-text">View your latest health metrics like BMI, glucose, BP, and more.</p>
                     <Button type="default" className="card-button" onClick={() => navigate("/patientDashboard")}>View Health Data</Button>

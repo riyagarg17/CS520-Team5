@@ -73,9 +73,9 @@ const RegistrationPage = () => {
     };
 
     const onFinish = (values) => {
-        let data = {};
+        let patientData = {};
         if (userType === "patient") {
-            data = {
+            patientData = {
                 email: values.email,
                 name: values.name,
                 dob: values.dob,
@@ -83,8 +83,9 @@ const RegistrationPage = () => {
                 password: values.password,
                 pincode: values.pincode,
             };
-            registerPatient(data)
+            registerPatient(patientData)
                 .then((data) => {
+                    console.log("Backend response:", data); 
                     if (data.status_code === 400) {
                         notification.error({
                             message: "Registration Failed",
@@ -93,7 +94,8 @@ const RegistrationPage = () => {
                         });
                     } else {
                         setUser({ ...data.body, type: userType });
-                        navigate("/mfa/register");
+                        navigate("/patient");
+                        // navigate("/mfa/register"); Ansh needs to add this
                     }
                 })
                 .catch((error) => {
@@ -106,7 +108,8 @@ const RegistrationPage = () => {
                 });
         }
         if (userType === "doctor") {
-            data = {
+            let doctorData = {}
+            doctorData = {
                 email: values.email,
                 name: values.name,
                 dob: values.dob,
@@ -114,7 +117,7 @@ const RegistrationPage = () => {
                 password: values.password,
                 pincode: values.pincode,
             };
-            registerDoctor(data)
+            registerDoctor(doctorData)
                 .then((data) => {
                     if (data.status_code === 400) {
                         notification.error({
@@ -126,7 +129,7 @@ const RegistrationPage = () => {
                     } else {
                         notification.destroy("registration-failed");
                         setUser({ ...data.body, type: userType });
-                        navigate("/mfa/register");
+                        // navigate("/mfa/register");
                     }
                 })
                 .catch((error) => {

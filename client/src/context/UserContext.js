@@ -6,6 +6,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
     type: "patient",
     email: "edsnowden@gmail.com",
+    health_details: {},
   });
   return (
     <UserContext.Provider value={{ user, setUser }}>
