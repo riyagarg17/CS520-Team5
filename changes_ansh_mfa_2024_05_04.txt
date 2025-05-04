@@ -1,0 +1,112 @@
+MFA Integration Changes and Testing Instructions
+Date: May 4, 2024
+
+1. File Changes Made:
+-----------------------
+a) Deleted unnecessary files:
+   - backend/app.py (removed Flask server)
+   - backend/models/mfa.js
+   - backend/controllers/mfaController.js
+   - backend/routes/mfaRoutes.js
+
+b) Modified files:
+   - backend/routes/routes.js:
+     * Added MFA routes:
+       - POST /api/patients/mfa/generate
+       - POST /api/patients/mfa/verify
+       - POST /api/patients/mfa/toggle
+
+   - backend/controllers/patientController.js:
+     * Added MFA functions:
+       - generateMFA: Creates secret, QR code, and backup codes
+       - verifyMFA: Validates TOTP tokens and backup codes
+       - toggleMFA: Enables/disables MFA for a patient
+
+   - backend/models/Patient.js:
+     * Added MFA fields:
+       - mfaSecret (String)
+       - mfaEnabled (Boolean)
+       - mfaBackupCodes (Array of Strings)
+
+2. Dependencies Added:
+-----------------------
+- speakeasy: For TOTP generation and verification
+- qrcode: For generating QR codes
+- Python packages (in virtual environment):
+  * scikit-learn
+  * numpy
+
+3. Testing Instructions:
+-----------------------
+a) Start the server:
+   cd backend && node app.js
+
+b) Generate MFA for a patient:
+   curl -X POST http://localhost:3000/api/patients/mfa/generate \
+   -H "Content-Type: application/json" \
+   -d '{"userId": "PATIENT_ID"}'
+
+   Response will include:
+   - secret: Base32 secret key
+   - qrCode: QR code in base64 format
+   - backupCodes: Array of 8 one-time use codes
+
+c) Enable MFA:
+   curl -X POST http://localhost:3000/api/patients/mfa/toggle \
+   -H "Content-Type: application/json" \
+   -d '{"userId": "PATIENT_ID", "enable": true}'
+
+d) Verify MFA token:
+   curl -X POST http://localhost:3000/api/patients/mfa/verify \
+   -H "Content-Type: application/json" \
+   -d '{"userId": "PATIENT_ID", "token": "TOKEN"}'
+
+   Token can be either:
+   - TOTP from authenticator app
+   - One of the backup codes
+
+e) Disable MFA:
+   curl -X POST http://localhost:3000/api/patients/mfa/toggle \
+   -H "Content-Type: application/json" \
+   -d '{"userId": "PATIENT_ID", "enable": false}'
+
+4. Important Notes:
+-----------------------
+- Backup codes are single-use and are removed after successful verification
+- TOTP tokens are time-based and expire after 30 seconds
+- MFA must be enabled after generation to enforce two-factor authentication
+- The QR code can be scanned with any TOTP-compatible authenticator app (Google Authenticator, Authy, etc.)
+- Store backup codes securely as they are the only way to regain access if authenticator app is lost
+
+5. Example Test Flow:
+-----------------------
+1. Create a test patient:
+   curl -X POST http://localhost:3000/api/patients \
+   -H "Content-Type: application/json" \
+   -d '{
+     "name": "Test Patient",
+     "email": "test@example.com",
+     "password": "password123",
+     "dob": "1990-01-01",
+     "gender": "Male",
+     "age": 33,
+     "pincode": 12345
+   }'
+
+2. Use the returned patient ID to:
+   a) Generate MFA
+   b) Enable MFA
+   c) Test verification with backup code
+   d) Test verification with TOTP
+   e) Disable MFA if needed
+
+6. Troubleshooting:
+-----------------------
+- If server shows "address in use" error, find and kill the existing process:
+  lsof -i :3000 | grep LISTEN
+  kill <PID>
+
+- If Python packages are not found, ensure you're in the virtual environment:
+  python3 -m venv venv
+  source venv/bin/activate
+  python3 -m pip install scikit-learn numpy 

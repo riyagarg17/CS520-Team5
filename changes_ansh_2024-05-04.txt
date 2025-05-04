@@ -1,0 +1,165 @@
+CS520-Team5 Implementation Changes - May 4, 2024
+=============================================
+
+1. Backend Setup and Integration
+--------------------------------
+
+New Files Created:
+1. backend/controllers/obesityRiskController.js
+   - Handles obesity risk prediction endpoint
+   - Integrates Python script with Node.js
+   - Manages data flow between frontend and Python model
+
+2. backend/controllers/patientController.js
+   - Manages patient data operations
+   - Handles CRUD operations for patient records
+
+3. backend/db/conn.js
+   - MongoDB connection configuration
+   - Establishes connection to CareCompass database
+
+4. backend/obesity_model.py
+   - Python script for obesity risk prediction
+   - Uses scikit-learn for machine learning
+   - Processes health metrics to predict risk levels
+
+5. backend/package.json
+   - Backend-specific dependencies
+   - Scripts for running the server
+
+6. backend/routes/obesityRiskRoutes.js
+   - Defines routes for obesity risk prediction
+   - Handles API endpoints
+
+Modified Files:
+1. backend/app.js
+   - Added MongoDB connection
+   - Configured Express server
+   - Set up middleware and routes
+
+2. backend/models/patient.js
+   - Updated patient model schema
+   - Added new fields for health metrics
+
+3. backend/routes/routes.js
+   - Integrated obesity risk prediction routes
+   - Added new API endpoints
+
+4. client/src/api/endpoint.js
+   - Updated API endpoints
+   - Added obesity risk prediction endpoint
+
+5. package.json (root)
+   - Added start script for the server
+   - Updated dependencies
+
+2. Key Features Implemented
+---------------------------
+
+1. Obesity Risk Prediction System
+   - Endpoint: /api/obesity-risk/predict
+   - Input: Health metrics (blood glucose, BMI, blood pressure, insulin dosage)
+   - Output: Risk level and confidence score
+
+2. MongoDB Integration
+   - Connected to CareCompass database
+   - Set up patient data storage
+   - Implemented data models and controllers
+
+3. Python Integration
+   - Created virtual environment for Python dependencies
+   - Installed required packages (scikit-learn, numpy)
+   - Set up communication between Node.js and Python
+
+3. Testing and Validation
+------------------------
+
+1. Server Testing
+   - Verified server starts correctly
+   - Confirmed MongoDB connection
+   - Tested API endpoints
+
+2. Prediction Testing
+   - Tested with normal health metrics:
+     {
+       "bloodGlucoseLevels": 120,
+       "bmi": 25,
+       "bloodPressure": "120/80",
+       "insulinDosage": 15
+     }
+   - Tested with higher risk metrics:
+     {
+       "bloodGlucoseLevels": 180,
+       "bmi": 35,
+       "bloodPressure": "150/95",
+       "insulinDosage": 45
+     }
+
+3. Response Format
+   {
+     "riskLevel": "Low",
+     "confidence": 0.67
+   }
+
+4. Technical Challenges Overcome
+-------------------------------
+
+1. Port Conflicts
+   - Resolved EADDRINUSE errors
+   - Implemented proper process management
+   - Used lsof to find and kill processes on port 3000
+
+2. Module Integration
+   - Fixed ES module imports
+   - Resolved Python dependency issues
+   - Set up proper virtual environment
+
+3. Data Flow
+   - Established communication between Node.js and Python
+   - Implemented proper error handling
+   - Set up data validation
+
+5. Version Control
+-----------------
+
+1. Branch Management
+   - Created and switched to 'ansh' branch
+   - Committed all changes
+   - Successfully pushed to remote repository
+
+2. Changes Committed
+   - 12 files changed
+   - 453 insertions
+   - 54 deletions
+   - 7 new files created
+
+6. Error Logs and Solutions
+---------------------------
+
+1. Port in Use Error:
+   Error: listen EADDRINUSE: address already in use :::3000
+   Solution: Used lsof to find and kill process using port 3000
+
+2. Missing Start Script:
+   npm error Missing script: "start"
+   Solution: Added start script to package.json
+
+3. Module Export Error:
+   SyntaxError: The requested module does not provide an export
+   Solution: Fixed ES module imports and exports
+
+4. Python Module Error:
+   ModuleNotFoundError: No module named 'numpy'
+   Solution: Created and activated virtual environment, installed dependencies
+
+7. Final Implementation Status
+-----------------------------
+
+The system is now fully functional with:
+- Working obesity risk prediction model
+- Proper database integration
+- Robust API endpoints
+- Error handling and validation
+- Clean code organization
+
+All changes have been successfully pushed to the 'ansh' branch of the repository. 
