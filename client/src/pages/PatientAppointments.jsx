@@ -1,86 +1,118 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Modal, Typography, Avatar, DatePicker, TimePicker, notification, Select, Empty } from "antd";
+import {
+  Card,
+  Button,
+  Typography,
+  Avatar,
+  DatePicker,
+  TimePicker,
+  Select,
+  Empty,
+  Modal
+} from "antd";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
-import { getAppointmentsByPatient } from "../api/services/patientService";
+import { getAppointmentsByPatient, updateAppointment } from "../api/services/patientService";
+import { UserOutlined } from "@ant-design/icons";
+import AlertBanner from "../components/AlertBanner";
 import "../styles/ViewAppointments.css";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
+const getGenderBasedAvatar = (gender) => {
+  const base = gender?.toLowerCase() === "male" ? "men" : "women";
+  const num = Math.floor(Math.random() * 100);
+  return `https://randomuser.me/api/portraits/${base}/${num}.jpg`;
+};
 
 const ViewAppointments = () => {
   const { user } = useUserContext();
   const [appointments, setAppointments] = useState([]);
+  const [cancelVisible, setCancelVisible] = useState(false);
+  const [appointmentToCancel, setAppointmentToCancel] = useState(null);
   const [rescheduleVisible, setRescheduleVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [newDate, setNewDate] = useState(null);
   const [newTime, setNewTime] = useState(null);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [alert, setAlert] = useState({ type: null, message: "" });
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.email) {
-      getAppointmentsByPatient(user.email)
-        .then((data) => setAppointments(data))
-        .catch((error) => {
-          console.error("Error fetching appointments:", error);
-          notification.error({
-            message: "Failed to fetch appointments",
-            description: "Please try again later.",
-          });
-        });
-    }
+    const fetchAppointments = async () => {
+      if (!user?.email) return;
+      try {
+        const data = await getAppointmentsByPatient(user.email);
+        setAppointments(data?.body || []);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+        showAlert("error", "Failed to fetch appointments.");
+      }
+    };
+
+    fetchAppointments();
   }, [user]);
+
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+    setTimeout(() => setAlert({ type: null, message: "" }), 5000);
+  };
+
+  const showCancelModal = (appt) => {
+    setAppointmentToCancel(appt);
+    setCancelVisible(true);
+  };
 
   const showRescheduleModal = (appointment) => {
     setSelectedAppointment(appointment);
     setRescheduleVisible(true);
   };
 
-  const handleReschedule = () => {
-    if (newDate && newTime) {
-      const updated = appointments.map((appt) =>
-        appt.id === selectedAppointment.id
-          ? {
-              ...appt,
-              date: newDate.format("YYYY-MM-DD"),
-              time: newTime.format("h:mm A"),
-              status: "Pending",
-            }
-          : appt
-      );
-      setAppointments(updated);
-      notification.success({
-        message: "Rescheduled",
-        description: `Appointment with ${selectedAppointment.doctorName} has been rescheduled.`,
-        duration: 3,
+  const handleReschedule = async () => {
+    if (!newDate || !newTime) return;
+    try {
+      await updateAppointment({
+        appointment_id: selectedAppointment.appointment_id,
+        new_date: newDate.format("YYYY-MM-DD"),
+        new_time: newTime.format("h:mm A"),
+        status: "Pending",
       });
+
+      setAppointments((prev) =>
+        prev.map((appt) =>
+          appt.appointment_id === selectedAppointment.appointment_id
+            ? { ...appt, appointment_date: newDate.format("YYYY-MM-DD"), appointment_time: newTime.format("h:mm A"), status: "Pending" }
+            : appt
+        )
+      );
+
+      showAlert("success", `Appointment with ${selectedAppointment.doctor_name} rescheduled.`);
+    } catch (err) {
+      console.error("Reschedule Error:", err);
+      showAlert("error", "Failed to reschedule appointment.");
+    } finally {
+      setRescheduleVisible(false);
+      setNewDate(null);
+      setNewTime(null);
+      setSelectedAppointment(null);
     }
-    setRescheduleVisible(false);
-    setNewDate(null);
-    setNewTime(null);
-    setSelectedAppointment(null);
   };
 
-  const handleCancelAppointment = (id) => {
-    Modal.confirm({
-      title: "Cancel Appointment",
-      content: "Are you sure you want to cancel this appointment?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
-      onOk: () => {
-        const cancelledAppt = appointments.find((appt) => appt.id === id);
-        setAppointments(appointments.filter((appt) => appt.id !== id));
-        notification.info({
-          message: "Appointment Cancelled",
-          description: `Appointment with ${cancelledAppt.doctorName} has been cancelled.`,
-          duration: 3,
-        });
-      },
-    });
+  const handleCancelAppointment = async () => {
+    if (!appointmentToCancel) return;
+    try {
+      await updateAppointment({ appointment_id: appointmentToCancel.appointment_id, status: "Cancelled" });
+      setAppointments((prev) => prev.filter((appt) => appt.appointment_id !== appointmentToCancel.appointment_id));
+      showAlert("info", `Appointment with ${appointmentToCancel.doctor_name} cancelled.`);
+    } catch (err) {
+      console.error("Cancel Error:", err);
+      showAlert("error", "Failed to cancel appointment.");
+    } finally {
+      setCancelVisible(false);
+      setAppointmentToCancel(null);
+    }
   };
 
   const getStatusTag = (status) => {
@@ -95,6 +127,8 @@ const ViewAppointments = () => {
 
   return (
     <div className="appointments-container">
+      {alert.message && <AlertBanner type={alert.type} message={alert.message} onClose={() => setAlert({ type: null, message: "" })} />}
+
       <Title level={2} className="appointments-header">
         Your Upcoming Appointments
       </Title>
@@ -127,18 +161,18 @@ const ViewAppointments = () => {
         <div className="appointments-grid two-column-grid">
           {filteredAppointments.map((appt) => (
             <motion.div
-              key={appt.id}
+              key={appt.appointment_id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
               <Card className="appointment-card pretty-card" hoverable>
                 <div className="appointment-header">
-                  <Avatar size={64} src={appt.photo} className="doctor-avatar" />
+                  <Avatar size={64} src={getGenderBasedAvatar(appt.doctor_gender)} icon={<UserOutlined />} />
                   <div>
-                    <h3 className="doctor-name">{appt.doctorName}</h3>
+                    <h3 className="doctor-name">{appt.doctor_name}</h3>
                     <p className="appointment-date">
-                      {dayjs(`${appt.date} ${appt.time}`).format(
+                      {dayjs(`${appt.appointment_date} ${appt.appointment_time}`).format(
                         "dddd, MMMM D, YYYY [at] h:mm A"
                       )}
                     </p>
@@ -147,24 +181,14 @@ const ViewAppointments = () => {
                 </div>
                 <div className="appointment-details">
                   <p>
-                    <Text strong>Experience:</Text> {appt.experience} years
-                  </p>
-                  <p>
-                    <Text strong>Gender:</Text> {appt.gender}
-                  </p>
-                  <p>
-                    <Text strong>Pincode:</Text> {appt.pincode}
+                    <Text strong>Doctor Email:</Text> {appt.doctor_email}
                   </p>
                 </div>
                 <div className="appointment-actions">
                   <Button type="primary" onClick={() => showRescheduleModal(appt)}>
                     Reschedule
                   </Button>
-                  <Button
-                    type="default"
-                    danger
-                    onClick={() => handleCancelAppointment(appt.id)}
-                  >
+                  <Button type="default" danger onClick={() => showCancelModal(appt)}>
                     Cancel
                   </Button>
                 </div>
@@ -175,7 +199,22 @@ const ViewAppointments = () => {
       )}
 
       <Modal
-        title={`Reschedule Appointment with ${selectedAppointment?.doctorName}`}
+        title="Cancel Appointment"
+        open={cancelVisible}
+        onOk={handleCancelAppointment}
+        onCancel={() => {
+          setCancelVisible(false);
+          setAppointmentToCancel(null);
+        }}
+        okText="Yes"
+        cancelText="No"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to cancel this appointment?</p>
+      </Modal>
+
+      <Modal
+        title={`Reschedule Appointment with ${selectedAppointment?.doctor_name}`}
         open={rescheduleVisible}
         onOk={handleReschedule}
         onCancel={() => setRescheduleVisible(false)}

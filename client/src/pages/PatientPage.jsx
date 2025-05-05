@@ -83,7 +83,7 @@ const Patient = () => {
                     styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
                     <p className="card-text">View/Modify your upcoming appointments.</p>
-                    <Button type="default" className="card-button" onClick={() => navigate("/viewAppointments")}>View Appointments</Button>
+                    <Button type="default" className="card-button" onClick={() => navigate("/patient/appointments")}>View Appointments</Button>
                 </Card>
 
                 <Card
@@ -103,7 +103,7 @@ const Patient = () => {
                     styles={{ color: '#fff', fontWeight: 'bold', fontSize: '18px', borderBottom: 'none' }}
                 >
                     <p className="card-text">View your latest health metrics like BMI, glucose, BP, and more.</p>
-                    <Button type="default" className="card-button" onClick={() => navigate("/patientDashboard")}>View Health Data</Button>
+                    <Button type="default" className="card-button" onClick={() => navigate("/patient/dashboard")}>View Health Data</Button>
                 </Card>
             </div>
             <Modal

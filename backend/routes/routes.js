@@ -3,10 +3,10 @@ const router = express.Router();
 
 // Import route modules
 const patientRoutes = require('./patientRoutes');
-const doctorRoutes = require('./doctorRoutes'); // assuming you have this too
+const doctorRoutes = require('./doctorRoutes'); 
 
 // Mount them with base paths
 router.use('/patients', patientRoutes);
-// router.use('/doctors', doctorRoutes); // optional, if doctorRoutes exists
+router.use('/doctors', doctorRoutes); 
 
 module.exports = router;

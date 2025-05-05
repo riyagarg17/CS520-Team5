@@ -27,7 +27,8 @@ const LoginPage = () => {
         const isTesting = params.has("test");
         const loginUrl =
             role === "patient" ? ENDPOINTS.patientLogin : ENDPOINTS.doctorLogin;
-
+        
+        console.log("login url: ", loginUrl)
         fetch(loginUrl, {
             method: "POST",
             headers: {

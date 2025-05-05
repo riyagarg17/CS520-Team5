@@ -34,8 +34,62 @@ export const getPatientHealthDetails = async (email) => {
   export const getAppointmentsByPatient = async (email) => {
     try {
       const url = `${ENDPOINTS.getAppointments}?email=${encodeURIComponent(email)}`;
-      return await fetchClient(url);
+      const response = fetchClient(url);
+      console.log("appointments: ", response)
+      return response;
     } catch (error) {
       throw error;
     }
   };
+
+
+  export const getAllDoctors = async () => {
+    try {
+        const response = await fetchClient(ENDPOINTS.getAllDoctors);
+        return response;
+    } catch (error) {
+        console.error("getAllDoctors Error:", error);
+        throw error;
+    }
+};
+
+// POST: Schedule an appointment
+export const scheduleAppointment = async (appointmentData) => {
+    try {
+        const response = await fetchClient(ENDPOINTS.scheduleAppointment, {
+            method: "POST",
+            body: JSON.stringify(appointmentData)
+        });
+        return response;
+    } catch (error) {
+        console.error("scheduleAppointment Error:", error);
+        throw error;
+    }
+};
+
+export const getBookedTimes = async (doctorEmail, appointment_date) => {
+  try {
+      const url = ENDPOINTS.getBookedTimes;
+      const response = await fetchClient(url, {
+          method: "POST",
+          body: JSON.stringify({ doctorEmail, appointment_date }),
+      });
+      return response;
+  } catch (error) {
+      console.error("Get Booked Times Error:", error);
+      throw error;
+  }
+};
+
+export const updateAppointment = async (payload) => {
+  console.log("update appt: ", payload)
+  try {
+    const response = await fetchClient(ENDPOINTS.updateAppointment, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

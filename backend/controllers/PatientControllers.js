@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const Patient = require('../models/patient');
+const Doctor = require('../models/Doctor');
+const { v4: uuidv4 } = require('uuid');
 
 exports.registerPatient = async (req, res) => {
   try {
@@ -80,12 +82,140 @@ exports.getHealthDetails = async (req, res) => {
 
 exports.getAppointmentsByEmail = async (req, res) => {
   try {
-    const { email } = req.query;
+    const email = req.query.email;
+    if (!email) {
+      return res.status(400).json({
+        status_code: 400,
+        message: "Email is required",
+      });
+    }
+
     const patient = await Patient.findOne({ email });
-    if (!patient) return res.status(404).json({ message: "Patient not found" });
-    return res.json(patient.appointments || []);
+    if (!patient) {
+      return res.status(404).json({
+        status_code: 404,
+        message: "Patient not found",
+      });
+    }
+    console.log("patient appointments are: ",patient.appointments)
+    res.status(200).json({
+      status_code: 200,
+      body: patient.appointments || [],
+    });
   } catch (error) {
-    console.error("Get Appointments Error:", error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error fetching patient appointments:", error);
+    res.status(500).json({
+      status_code: 500,
+      message: "Server error while fetching appointments",
+    });
+  }
+};
+
+
+
+exports.scheduleAppointment = async (req, res) => {
+  const { patientEmail, doctorEmail, appointment_date, appointment_time } = req.body;
+
+  if (!patientEmail || !doctorEmail || !appointment_date || !appointment_time) {
+    return res.status(400).json({
+      status_code: 400,
+      message: "Missing required appointment fields"
+    });
+  }
+
+  try {
+    const patient = await Patient.findOne({ email: patientEmail });
+    const doctor = await Doctor.findOne({ email: doctorEmail });
+
+    if (!patient || !doctor) {
+      return res.status(404).json({
+        status_code: 404,
+        message: "Doctor or patient not found"
+      });
+    }
+
+    const appointment_id = uuidv4();
+
+    const newAppointment = {
+      appointment_id,
+      patient_email: patient.email,
+      patient_name: patient.name,
+      doctor_email: doctor.email,
+      doctor_name: doctor.name,
+      appointment_date,
+      appointment_time,
+      status: "Pending"
+    };
+
+    // Push appointment to both records
+    patient.appointments.push(newAppointment);
+    doctor.appointments.push(newAppointment);
+
+    await patient.save();
+    await Doctor.updateOne(
+      { email: doctor.email },
+      { $push: { appointments: newAppointment } }
+    );
+
+    return res.status(201).json({
+      status_code: 201,
+      message: "Appointment scheduled successfully",
+      body: { appointment_id }
+    });
+  } catch (error) {
+    console.error("Schedule Error:", error);
+    return res.status(500).json({
+      status_code: 500,
+      message: "Internal server error"
+    });
+  }
+};
+
+exports.updateAppointment = async (req, res) => {
+  try {
+    console.log("update appointment: ", req.body)
+    const { appointment_id, new_date, new_time, status } = req.body;
+
+    if (!appointment_id) {
+      return res.status(400).json({ message: "Appointment ID is required" });
+    }
+
+    // Update in Patient collection
+    const patient = await Patient.findOneAndUpdate(
+      { "appointments.appointment_id": appointment_id },
+      {
+        $set: {
+          "appointments.$.appointment_date": new_date,
+          "appointments.$.appointment_time": new_time,
+          "appointments.$.status": status,
+        },
+      },
+      { new: true }
+    );
+
+    // Update in Doctor collection
+    const doctor = await Doctor.findOneAndUpdate(
+      { "appointments.appointment_id": appointment_id },
+      {
+        $set: {
+          "appointments.$.appointment_date": new_date,
+          "appointments.$.appointment_time": new_time,
+          "appointments.$.status": status,
+        },
+      },
+      { new: true }
+    );
+
+    if (!patient || !doctor) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    return res.status(200).json({
+      status_code: 200,
+      message: "Appointment updated successfully",
+    });
+  } catch (error) {
+    console.error("Update Appointment Error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

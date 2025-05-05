@@ -33,12 +33,12 @@ To set up and run the project, follow these steps:
 
 2. **Install Dependencies**
    ```sh
-   pip install -r requirements.txt
+   npm install 
    ```
 
 3. **Run the Application**
    ```sh
-   python app.py
+   npm run
    ```
 
 ## Usage

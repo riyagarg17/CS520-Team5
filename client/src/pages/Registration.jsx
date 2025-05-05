@@ -108,16 +108,7 @@ const RegistrationPage = () => {
                 });
         }
         if (userType === "doctor") {
-            let doctorData = {}
-            doctorData = {
-                email: values.email,
-                name: values.name,
-                dob: values.dob,
-                gender: values.gender,
-                password: values.password,
-                pincode: values.pincode,
-            };
-            registerDoctor(doctorData)
+            registerDoctor(values, licenseFile)
                 .then((data) => {
                     if (data.status_code === 400) {
                         notification.error({
@@ -127,9 +118,14 @@ const RegistrationPage = () => {
                             key: "registration-failed",
                         });
                     } else {
-                        notification.destroy("registration-failed");
+                        // notification.destroy("registration-failed");
+                        notification.success({
+                            message: "Registration Successful",
+                            description: `Welcome Dr. ${data.body.name}!`,
+                          });
                         setUser({ ...data.body, type: userType });
-                        // navigate("/mfa/register");
+                        navigate("/doctor");
+                        // navigate("/mfa/register"); Ansh to complete this 
                     }
                 })
                 .catch((error) => {

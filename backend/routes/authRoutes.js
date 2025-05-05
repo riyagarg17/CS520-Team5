@@ -1,9 +1,9 @@
 // routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
-const { loginPatient } = require("../controllers/authController");
+const { loginPatient,loginDoctor } = require("../controllers/authController");
 
 router.post("/patients/login", loginPatient);
-// router.post("/doctorLogin", loginDoctor);
+router.post("/doctors/login", loginDoctor);
 
 module.exports = router;
