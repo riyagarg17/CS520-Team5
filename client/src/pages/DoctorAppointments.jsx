@@ -19,6 +19,7 @@ import {
 import AlertBanner from "../components/AlertBanner";
 import { UserOutlined } from "@ant-design/icons";
 import "../styles/DoctorAppointments.css";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -32,11 +33,17 @@ const DoctorAppointments = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-
+  
     const fetchAppointments = async () => {
       try {
         const data = await getDoctorAppointments(user.email);
-        const appts = data || [];
+        console.log("apts: ", data)
+        const appts = (data || []).sort((a, b) => {
+          const dateA = new Date(`${a.appointment_date} ${a.appointment_time}`);
+          const dateB = new Date(`${b.appointment_date} ${b.appointment_time}`);
+          return dateA - dateB;
+        });
+  
         setAppointments(appts);
         setFilteredAppointments(appts);
       } catch (err) {
@@ -48,9 +55,10 @@ const DoctorAppointments = () => {
         setLoading(false);
       }
     };
-
+  
     fetchAppointments();
   }, [user?.email]);
+  
 
   const showAlert = (type, message) => {
     setAlert({ type, message });
@@ -77,33 +85,37 @@ const DoctorAppointments = () => {
   };
 
   const handleStatusChange = async (id, newStatus, patient_email) => {
-
     try {
-        await updateAppointmentStatus({
-            appointment_id: id,
-            newStatus,
-            doctorEmail: user.email, // include doctorEmail
-            patientEmail: patient_email
-          });
-
-      const updated = appointments.map((app) =>
-        app.appointment_id === id ? { ...app, status: newStatus } : app
-      );
-
-      setAppointments(updated);
-
-      const filtered = filterStatus === "All"
-        ? updated
-        : updated.filter((a) => a.status === filterStatus);
-
-      setFilteredAppointments(filtered);
-
+      await updateAppointmentStatus({
+        appointment_id: id,
+        newStatus,
+        doctorEmail: user.email,
+        patientEmail: patient_email,
+      });
+  
+      if (newStatus === "Cancelled") {
+        const updated = appointments.filter(app => app.appointment_id !== id);
+        setAppointments(updated);
+        setFilteredAppointments(updated.filter(app =>
+          filterStatus === "All" ? true : app.status === filterStatus
+        ));
+      } else {
+        const updated = appointments.map(app =>
+          app.appointment_id === id ? { ...app, status: newStatus } : app
+        );
+        setAppointments(updated);
+        setFilteredAppointments(
+          filterStatus === "All" ? updated : updated.filter(app => app.status === filterStatus)
+        );
+      }
+  
       showAlert("success", `Appointment ${newStatus.toLowerCase()}`);
     } catch (err) {
       console.error(`Error updating status to ${newStatus}`, err);
       showAlert("error", `Failed to ${newStatus.toLowerCase()} appointment`);
     }
   };
+  
 
   const getGenderBasedAvatar = (gender) => {
     const base = gender?.toLowerCase() === "male" ? "men" : "women";
@@ -163,8 +175,9 @@ const DoctorAppointments = () => {
                     <div>
                       <h3>{appt.patient_name}</h3>
                       <p>
-                        {new Date(appt.appointment_date).toDateString()} at {appt.appointment_time}
-                      </p>
+  {dayjs(`${appt.appointment_date} ${appt.appointment_time}`, "YYYY-MM-DD h:mm A").format("dddd, MMMM D, YYYY [at] h:mm A")}
+</p>
+
                       {getStatusTag(appt.status)}
                     </div>
                   </div>

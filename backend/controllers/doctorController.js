@@ -30,7 +30,7 @@ exports.registerDoctor = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // Save doctor
     const newDoctor = new Doctor({
       name,
@@ -68,68 +68,87 @@ exports.registerDoctor = async (req, res) => {
 
 // Fetch appointments by doctor email
 exports.getDoctorAppointments = async (req, res) => {
-    try {
-        const { email } = req.params;
-        const doctor = await Doctor.findOne({ email });
+  try {
+    const { email } = req.params;
+    const doctor = await Doctor.findOne({ email });
 
-        if (!doctor) {
-            return res.status(404).json({ message: "Doctor not found" });
-        }
-
-        console.log("DOCTOR appt;" ,doctor.appointments || [])
-        res.status(200).json(doctor.appointments || []);
-    } catch (error) {
-        console.error("Error fetching doctor appointments:", error);
-        res.status(500).json({ message: "Internal server error" });
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
     }
+
+    console.log("DOCTOR appt;", doctor.appointments || [])
+    res.status(200).json(doctor.appointments || []);
+  } catch (error) {
+    console.error("Error fetching doctor appointments:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 // Update status of a specific appointment
 exports.updateAppointmentStatus = async (req, res) => {
-    try {
-        console.log("Change doctor appt status: ", req.body)
-        const { appointment_id } = req.params;
-        const { newStatus, doctorEmail, patientEmail } = req.body;
-        console.log("Received appointment_id:", appointment_id);
-        // console.log(doctorEmail,patient_email)
-        const doctorUpdate = await Doctor.updateOne(
-          { email: doctorEmail, "appointments.appointment_id": appointment_id },
-          { $set: { "appointments.$.status": newStatus } }
-        );
-        // Update in Patient collection
-        const patientUpdate = await Patient.updateOne(
-          { email: patientEmail, "appointments.appointment_id": appointment_id },
-          { $set: { "appointments.$.status": newStatus } }
-        );
-        if (doctorUpdate.modifiedCount === 0 || patientUpdate.modifiedCount === 0) {
-          return res.status(404).json({ message: "Appointment not found or not updated." });
-        }
-        res.status(200).json({
-          message: "Appointment status updated in both doctor and patient records",
-          doctorUpdate,
-          patientUpdate
-        });
-        sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
-    } catch (error) {
-        console.error("Error updating appointment status:", error);
-        res.status(500).json({ message: "Internal server error" });
+  try {
+    // console.log("Change doctor appt status: ", req.body)
+    const { appointment_id } = req.params;
+    const { newStatus, doctorEmail, patientEmail } = req.body;
+    console.log("Received appointment_id:", appointment_id);
+    // console.log(doctorEmail,patient_email)
+
+    if (newStatus === "Cancelled") {
+      // Remove from doctor's appointments
+      await Doctor.updateOne(
+        { email: doctorEmail },
+        { $pull: { appointments: { appointment_id } } }
+      );
+
+      // Remove from patient's appointments
+      await Patient.updateOne(
+        { email: patientEmail },
+        { $pull: { appointments: { appointment_id } } }
+      );
+      // Uncomment only in prod 
+      // sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
+      return res.status(200).json({ message: "Appointment cancelled and removed" });
     }
+    
+    const doctorUpdate = await Doctor.updateOne(
+      { email: doctorEmail, "appointments.appointment_id": appointment_id },
+      { $set: { "appointments.$.status": newStatus } }
+    );
+    // Update in Patient collection
+    const patientUpdate = await Patient.updateOne(
+      { email: patientEmail, "appointments.appointment_id": appointment_id },
+      { $set: { "appointments.$.status": newStatus } }
+    );
+    if (doctorUpdate.modifiedCount === 0 || patientUpdate.modifiedCount === 0) {
+      return res.status(404).json({ message: "Appointment not found or not updated." });
+    }
+    res.status(200).json({
+      message: "Appointment status updated in both doctor and patient records",
+      doctorUpdate,
+      patientUpdate
+    });
+    // Uncomment only in prod 
+    // sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
+  } catch (error) {
+    console.error("Error updating appointment status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 
 exports.getAllDoctors = async (req, res) => {
   try {
-      const doctors = await Doctor.find({}, "-password -medicalCertificate"); // exclude sensitive info
-      res.status(200).json({ status_code: 200, body: doctors });
+    const doctors = await Doctor.find({}, "-password -medicalCertificate"); // exclude sensitive info
+    res.status(200).json({ status_code: 200, body: doctors });
   } catch (error) {
-      console.error("Error fetching doctors:", error);
-      res.status(500).json({ status_code: 500, message: "Internal Server Error" });
+    console.error("Error fetching doctors:", error);
+    res.status(500).json({ status_code: 500, message: "Internal Server Error" });
   }
 };
 
 exports.getBookedTimes = async (req, res) => {
   try {
-    console.log("get booked: ", req.body)
+    // console.log("get booked: ", req.body)
     const { doctorEmail, appointment_date } = req.body;
 
     if (!doctorEmail || !appointment_date) {

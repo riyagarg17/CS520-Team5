@@ -100,20 +100,51 @@ const ViewAppointments = () => {
     }
   };
 
-  const handleCancelAppointment = async () => {
-    if (!appointmentToCancel) return;
+  // const handleCancelAppointment = async () => {
+  //   if (!appointmentToCancel) return;
+  //   try {
+  //     await updateAppointment({ appointment_id: appointmentToCancel.appointment_id, status: "Cancelled" });
+  //     setAppointments((prev) => prev.filter((appt) => appt.appointment_id !== appointmentToCancel.appointment_id));
+  //     showAlert("info", `Appointment with ${appointmentToCancel.doctor_name} cancelled.`);
+  //   } catch (err) {
+  //     console.error("Cancel Error:", err);
+  //     showAlert("error", "Failed to cancel appointment.");
+  //   } finally {
+  //     setCancelVisible(false);
+  //     setAppointmentToCancel(null);
+  //   }
+  // };
+
+
+  const confirmCancelAppointment = async () => {
     try {
-      await updateAppointment({ appointment_id: appointmentToCancel.appointment_id, status: "Cancelled" });
-      setAppointments((prev) => prev.filter((appt) => appt.appointment_id !== appointmentToCancel.appointment_id));
-      showAlert("info", `Appointment with ${appointmentToCancel.doctor_name} cancelled.`);
+      await updateAppointment({
+        appointment_id: appointmentToCancel,
+        status: "Cancelled",
+      });
+
+      const updated = appointments.filter(
+        (appt) => appt.appointment_id !== appointmentToCancel
+      );
+
+      setAppointments(updated);
+
+      const filtered = statusFilter === "All"
+        ? updated
+        : updated.filter((a) => a.status === statusFilter);
+
+      setAlert({ type: "info", message: "Appointment has been cancelled." });
+      setTimeout(() => setAlert({ type: null, message: "" }), 5000);
     } catch (err) {
       console.error("Cancel Error:", err);
-      showAlert("error", "Failed to cancel appointment.");
+      setAlert({ type: "error", message: "Failed to cancel appointment." });
+      setTimeout(() => setAlert({ type: null, message: "" }), 5000);
     } finally {
       setCancelVisible(false);
       setAppointmentToCancel(null);
     }
   };
+
 
   const getStatusTag = (status) => {
     const classes = `status-tag ${status.toLowerCase()}`;
@@ -201,7 +232,7 @@ const ViewAppointments = () => {
       <Modal
         title="Cancel Appointment"
         open={cancelVisible}
-        onOk={handleCancelAppointment}
+        onOk={confirmCancelAppointment}
         onCancel={() => {
           setCancelVisible(false);
           setAppointmentToCancel(null);

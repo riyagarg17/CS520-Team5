@@ -155,20 +155,18 @@ exports.scheduleAppointment = async (req, res) => {
 
     await patient.save();
     await Doctor.updateOne(
-      {
-        email: doctor.email,
-        "patients.email": { $ne: patient.email }  // Only add patient if not already added
-      },
-      {
-        $push: {
-          appointments: newAppointment,
-          patients: {
-            email: patient.email,
-            name: patient.name,
-          }
-        }
-      }
+      { email: doctor.email },
+      { $push: { appointments: newAppointment } }
     );
+    
+    // Only push patient if not already present
+    const isPatientAlreadyAdded = doctor.patients.some(p => p.email === patient.email);
+    if (!isPatientAlreadyAdded) {
+      await Doctor.updateOne(
+        { email: doctor.email },
+        { $push: { patients: { email: patient.email, name: patient.name } } }
+      );
+    }
 
     return res.status(201).json({
       status_code: 201,
