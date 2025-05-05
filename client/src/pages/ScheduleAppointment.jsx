@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Modal, Typography, Avatar, DatePicker, TimePicker, Row, Col, notification, Empty, Spin } from "antd";
+import { Card, Button, Modal, Typography, Avatar, DatePicker, TimePicker, Row, Col, Empty, Spin } from "antd";
 import { CalendarOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "../styles/ScheduleAppointment.css";
 import { getAllDoctors, scheduleAppointment, getBookedTimes } from "../api/services/patientService";
 import { useUserContext } from "../context/UserContext";
+import AlertBanner from "../components/AlertBanner";
 
 const { Title, Text } = Typography;
 
@@ -22,6 +23,7 @@ const ScheduleAppointment = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [unavailableTimes, setUnavailableTimes] = useState([]);
+    const [alert, setAlert] = useState({ type: null, message: "" });
     const { user } = useUserContext();
 
     useEffect(() => {
@@ -31,7 +33,7 @@ const ScheduleAppointment = () => {
                 setDoctorsList(response.body || []);
             } catch (err) {
                 console.error("Failed to fetch doctors", err);
-                notification.error({ message: "Failed to load doctors" });
+                showAlert("error", "Failed to load doctors");
             } finally {
                 setLoading(false);
             }
@@ -46,7 +48,7 @@ const ScheduleAppointment = () => {
 
             try {
                 const res = await getBookedTimes(selectedDoctor.email, selectedDate.format("YYYY-MM-DD"));
-                console.log("booked times: ", res.body)
+                console.log("booked times: ", res.body);
                 setUnavailableTimes(res.body || []);
             } catch (err) {
                 console.error("Failed to fetch booked times", err);
@@ -55,6 +57,11 @@ const ScheduleAppointment = () => {
 
         fetchUnavailableTimes();
     }, [selectedDoctor, selectedDate]);
+
+    const showAlert = (type, message) => {
+        setAlert({ type, message });
+        setTimeout(() => setAlert({ type: null, message: "" }), 5000);
+    };
 
     const handleOpenModal = (doctor) => {
         setSelectedDoctor(doctor);
@@ -75,10 +82,10 @@ const ScheduleAppointment = () => {
                 appointment_time: selectedTime.format("h:mm A")
             });
 
-            notification.success({ message: "Appointment scheduled successfully" });
+            showAlert("success", "Appointment scheduled successfully");
         } catch (err) {
             console.error("Failed to schedule appointment", err);
-            notification.error({ message: "Could not schedule appointment" });
+            showAlert("error", "Could not schedule appointment");
         } finally {
             setVisibleModal(false);
         }
@@ -86,7 +93,7 @@ const ScheduleAppointment = () => {
 
     const getDisabledHours = () => {
         if (!unavailableTimes || unavailableTimes.length === 0) return [];
-    
+
         return unavailableTimes
             .map(time => {
                 const hour = dayjs(time, "h:mm A", true).hour();
@@ -97,6 +104,14 @@ const ScheduleAppointment = () => {
 
     return (
         <div className="schedule-container">
+            {alert.message && (
+                <AlertBanner
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert({ type: null, message: "" })}
+                />
+            )}
+
             <Title level={2}>Book an Appointment</Title>
 
             {loading ? (

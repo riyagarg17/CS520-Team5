@@ -1,8 +1,7 @@
 const bcrypt = require('bcrypt');
 const Doctor = require('../models/Doctor');
 const Patient = require('../models/patient');
-const path = require('path');
-const fs = require('fs');
+const sendEmail = require('../utils/emailService')
 
 exports.registerDoctor = async (req, res) => {
   // console.log("BODY:", req.body);
@@ -110,6 +109,7 @@ exports.updateAppointmentStatus = async (req, res) => {
           doctorUpdate,
           patientUpdate
         });
+        sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
     } catch (error) {
         console.error("Error updating appointment status:", error);
         res.status(500).json({ message: "Internal server error" });

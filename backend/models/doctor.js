@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 const appointmentSchema = require("./appointmentSchema");
+
+const patientInfoSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  name: String,
+}, { _id: false });
+
 const doctorSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -13,7 +19,7 @@ const doctorSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
   },
-
+  patients: [patientInfoSchema],
   password: {
     type: String,
     required: true,

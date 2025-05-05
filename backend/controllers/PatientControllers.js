@@ -3,12 +3,13 @@ const Patient = require('../models/patient');
 const Doctor = require('../models/Doctor');
 const { v4: uuidv4 } = require('uuid');
 
+
 exports.registerPatient = async (req, res) => {
   try {
     const { email, name, dob, gender, password, pincode } = req.body;
     console.log("Incoming body:", req.body);
 
-    const existingPatient = await Patient.findOne({ email:email });
+    const existingPatient = await Patient.findOne({ email: email });
     if (existingPatient) {
       console.log("Patient already exists", existingPatient);
       return res.status(400).json({ message: 'Email already registered', status_code: 400 });
@@ -43,15 +44,15 @@ exports.updateHealthDetails = async (req, res) => {
   console.log("Update details: ", req.body)
   try {
     const updatedPatient = await Patient.findOneAndUpdate(
-      { email: email }, 
+      { email: email },
       { $set: { health_details } },
       { new: true }
     );
-  
+
     if (!updatedPatient) {
       return res.status(404).json({ message: "Patient not found" });
     }
-  
+
     res.status(200).json({ message: "Health details updated", patient: updatedPatient });
   } catch (error) {
     console.error("Update Error:", error);
@@ -97,7 +98,7 @@ exports.getAppointmentsByEmail = async (req, res) => {
         message: "Patient not found",
       });
     }
-    console.log("patient appointments are: ",patient.appointments)
+    console.log("patient appointments are: ", patient.appointments)
     res.status(200).json({
       status_code: 200,
       body: patient.appointments || [],
@@ -134,6 +135,7 @@ exports.scheduleAppointment = async (req, res) => {
       });
     }
 
+
     const appointment_id = uuidv4();
 
     const newAppointment = {
@@ -153,8 +155,19 @@ exports.scheduleAppointment = async (req, res) => {
 
     await patient.save();
     await Doctor.updateOne(
-      { email: doctor.email },
-      { $push: { appointments: newAppointment } }
+      {
+        email: doctor.email,
+        "patients.email": { $ne: patient.email }  // Only add patient if not already added
+      },
+      {
+        $push: {
+          appointments: newAppointment,
+          patients: {
+            email: patient.email,
+            name: patient.name,
+          }
+        }
+      }
     );
 
     return res.status(201).json({
