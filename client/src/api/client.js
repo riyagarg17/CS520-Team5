@@ -7,7 +7,6 @@ const fetchClient = async (url, options = {}) => {
             },
             ...options,
         });
-
         if (!response.ok) {
             throw new Error(`HTTP Error! Status: ${response.status}`);
         }
