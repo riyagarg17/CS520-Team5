@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Typography, Row, Col, Button } from "antd";
 import { ExclamationCircleOutlined, HeartTwoTone, FireTwoTone, SmileTwoTone } from "@ant-design/icons";
 import { motion } from "framer-motion";
+import ChatbotIcon from "../components/ChatbotIcon"; // Import the new component
 import "../styles/HealthPage.css";
 
 const { Title, Text } = Typography;
@@ -81,6 +82,9 @@ const HealthPage = () => {
                     </motion.div>
                 </Col>
             </Row>
+
+            {/* Add the ChatbotIcon component here */}
+            <ChatbotIcon />
         </div>
     );
 };
