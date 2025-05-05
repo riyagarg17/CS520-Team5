@@ -7,7 +7,7 @@ const ChatbotIcon = () => {
   return (
     <Link to="/chatassist" className="chatbot-container">
       <div className="speech-bubble">
-        Hello! Do you have any questions?
+        Hello! How can I assist you today?
       </div>
       {/* Use the imported image variable */}
       <img src={doctorIcon} alt="Chatbot" className="chatbot-icon" />

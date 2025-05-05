@@ -5,7 +5,9 @@ import { useUserContext } from "../context/UserContext";
 // import { ENDPOINTS } from "../api/endpoint"; // Import when ready for backend integration
 import "../styles/Chatbot.css";
 import doctorIcon from '../assets/doctor_icon.jpg'; // Import the image
+import { sendChatMessageWithContext } from "../api/services/chatbotService"; // Import the service for sending messages
 
+// TODO: analyze how chathistory is stored, maybe store after page refresh?
 const Chatbot = () => {
   // Remove id from initial message
   const startPrompt = { sender: "bot", text: "Hello, how can I assist you today?" };
@@ -25,38 +27,6 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Simulate backend streaming response
-  const simulateBotResponse = (userMessageText) => {
-    setIsLoading(true);
-    // No loadingMessageId needed
-
-    // Add a temporary loading message without id
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { sender: "bot", text: "..." },
-    ]);
-
-    // Simulate network delay and response generation
-    setTimeout(() => {
-      const botResponseText = `This is a simulated response to: "${userMessageText}"`;
-      // Update the last message in the array
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-        // Ensure there's a message to update
-        if (updatedMessages.length > 0) {
-          const lastMessageIndex = updatedMessages.length - 1;
-          // Update the text of the last message (which was the loading message)
-          updatedMessages[lastMessageIndex] = {
-            ...updatedMessages[lastMessageIndex],
-            text: botResponseText,
-          };
-        }
-        return updatedMessages;
-      });
-      setIsLoading(false); // Stop loading
-    }, 1500); // Simulate 1.5 seconds delay
-  };
-
   // Handle sending a message
   const handleSendMessage = async () => {
     const trimmedInput = inputValue.trim();
@@ -72,60 +42,61 @@ const Chatbot = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInputValue(""); // Clear input field
 
-    // --- Backend Integration (Commented out for now - Needs similar update logic) ---
-    /*
         setIsLoading(true);
         try {
-            // Prepare payload including user context
-            const payload = {
-                userInput: trimmedInput,
-                userContext: { // Send relevant user info
-                    email: user.email,
-                    type: user.type,
-                    // Add other relevant context if needed
-                }
-            };
-
-            // Replace with actual API call and streaming logic
-            const response = await fetch(ENDPOINTS.chatAssistant, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
+            const response = await sendChatMessageWithContext(
+                userMessage.text,
+                messages,
+                user.name,
+                user.email
+            );
 
             if (!response.ok || !response.body) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            console.log("Response from server:", response.body.result);
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let botResponseText = '';
-            let firstChunk = true;
-            // No botMessageId needed
+            setMessages(prev => {
+                const updatedMessages = [...prev];
+                if (updatedMessages.length > 0) {
+                        const lastMessageIndex = updatedMessages.length - 1;
+                        updatedMessages[lastMessageIndex] = {
+                            ...updatedMessages[lastMessageIndex],
+                            text: response.body.result
+                        };
+                }
+                return updatedMessages;
+            });
 
-            // Add initial bot message placeholder when starting stream
-            setMessages(prev => [...prev, { sender: 'bot', text: '...' }]);
+            // If i add streaming, use this
+            // const reader = response.body.getReader();
+            // const decoder = new TextDecoder();
+            // let botResponseText = '';
+            // let firstChunk = true;
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+            // // Add initial bot message placeholder when starting stream
+            // setMessages(prev => [...prev, { sender: 'bot', text: '...' }]);
 
-                const chunk = decoder.decode(value, { stream: true });
-                botResponseText += chunk;
+            // while (true) {
+            //     const { done, value } = await reader.read();
+            //     if (done) break;
 
-                // Update the last message in the array
-                setMessages(prev => {
-                    const updatedMessages = [...prev];
-                    if (updatedMessages.length > 0) {
-                         const lastMessageIndex = updatedMessages.length - 1;
-                         updatedMessages[lastMessageIndex] = {
-                             ...updatedMessages[lastMessageIndex],
-                             text: botResponseText
-                         };
-                    }
-                    return updatedMessages;
-                });
-            }
+            //     const chunk = decoder.decode(value, { stream: true });
+            //     botResponseText += chunk;
+
+            //     // Update the last message in the array
+            //     setMessages(prev => {
+            //         const updatedMessages = [...prev];
+            //         if (updatedMessages.length > 0) {
+            //              const lastMessageIndex = updatedMessages.length - 1;
+            //              updatedMessages[lastMessageIndex] = {
+            //                  ...updatedMessages[lastMessageIndex],
+            //                  text: botResponseText
+            //              };
+            //         }
+            //         return updatedMessages;
+            //     });
+            // }
 
         } catch (error) {
             console.error("Error fetching chat response:", error);
@@ -134,11 +105,6 @@ const Chatbot = () => {
         } finally {
             setIsLoading(false);
         }
-        */
-    // --- End Backend Integration ---
-
-    // Use simulation for now
-    simulateBotResponse(trimmedInput);
   };
 
   return (
