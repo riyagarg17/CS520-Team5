@@ -27,7 +27,8 @@ const LoginPage = () => {
         const isTesting = params.has("test");
         const loginUrl =
             role === "patient" ? ENDPOINTS.patientLogin : ENDPOINTS.doctorLogin;
-
+        
+        console.log("login url: ", loginUrl)
         fetch(loginUrl, {
             method: "POST",
             headers: {
@@ -55,7 +56,9 @@ const LoginPage = () => {
                     if (isTesting) {
                         navigate(role === "doctor" ? "/doctor" : "/patient");
                     } else {
-                        navigate(`/mfa/register`);
+                        navigate(role === "doctor" ? "/doctor" : "/patient");
+                        // navigate(`/mfa/register`); 
+                        // Ansh to implement this; only if not testing, uncomment later
                     }
                 }
             })
