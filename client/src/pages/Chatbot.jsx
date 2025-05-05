@@ -7,7 +7,9 @@ import "../styles/Chatbot.css";
 import doctorIcon from '../assets/doctor_icon.jpg'; // Import the image
 
 const Chatbot = () => {
-  const [messages, setMessages] = useState([]);
+  // Remove id from initial message
+  const startPrompt = { sender: "bot", text: "Hello, how can I assist you today?" };
+  const [messages, setMessages] = useState([startPrompt]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUserContext(); // Get user context
@@ -26,25 +28,31 @@ const Chatbot = () => {
   // Simulate backend streaming response
   const simulateBotResponse = (userMessageText) => {
     setIsLoading(true);
-    const loadingMessageId = Date.now(); // Unique ID for the loading message
+    // No loadingMessageId needed
 
-    // Add a temporary loading message
+    // Add a temporary loading message without id
     setMessages((prevMessages) => [
       ...prevMessages,
-      { id: loadingMessageId, sender: "bot", text: "..." },
+      { sender: "bot", text: "..." },
     ]);
 
     // Simulate network delay and response generation
     setTimeout(() => {
       const botResponseText = `This is a simulated response to: "${userMessageText}"`;
-      // Update the loading message with the actual response
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg.id === loadingMessageId
-            ? { ...msg, text: botResponseText }
-            : msg
-        )
-      );
+      // Update the last message in the array
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        // Ensure there's a message to update
+        if (updatedMessages.length > 0) {
+          const lastMessageIndex = updatedMessages.length - 1;
+          // Update the text of the last message (which was the loading message)
+          updatedMessages[lastMessageIndex] = {
+            ...updatedMessages[lastMessageIndex],
+            text: botResponseText,
+          };
+        }
+        return updatedMessages;
+      });
       setIsLoading(false); // Stop loading
     }, 1500); // Simulate 1.5 seconds delay
   };
@@ -54,8 +62,8 @@ const Chatbot = () => {
     const trimmedInput = inputValue.trim();
     if (!trimmedInput || isLoading) return;
 
+    // Create user message without id
     const userMessage = {
-      id: Date.now(), // Simple unique ID for now
       sender: "user",
       text: trimmedInput,
     };
@@ -64,7 +72,7 @@ const Chatbot = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInputValue(""); // Clear input field
 
-    // --- Backend Integration (Commented out for now) ---
+    // --- Backend Integration (Commented out for now - Needs similar update logic) ---
     /*
         setIsLoading(true);
         try {
@@ -93,7 +101,10 @@ const Chatbot = () => {
             const decoder = new TextDecoder();
             let botResponseText = '';
             let firstChunk = true;
-            let botMessageId = Date.now();
+            // No botMessageId needed
+
+            // Add initial bot message placeholder when starting stream
+            setMessages(prev => [...prev, { sender: 'bot', text: '...' }]);
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -102,22 +113,24 @@ const Chatbot = () => {
                 const chunk = decoder.decode(value, { stream: true });
                 botResponseText += chunk;
 
-                if (firstChunk) {
-                    // Add initial bot message placeholder or first chunk
-                    setMessages(prev => [...prev, { id: botMessageId, sender: 'bot', text: botResponseText }]);
-                    firstChunk = false;
-                } else {
-                    // Update the existing bot message
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === botMessageId ? { ...msg, text: botResponseText } : msg
-                    ));
-                }
+                // Update the last message in the array
+                setMessages(prev => {
+                    const updatedMessages = [...prev];
+                    if (updatedMessages.length > 0) {
+                         const lastMessageIndex = updatedMessages.length - 1;
+                         updatedMessages[lastMessageIndex] = {
+                             ...updatedMessages[lastMessageIndex],
+                             text: botResponseText
+                         };
+                    }
+                    return updatedMessages;
+                });
             }
 
         } catch (error) {
             console.error("Error fetching chat response:", error);
-            // Add an error message to the chat
-            setMessages(prev => [...prev, { id: Date.now(), sender: 'bot', text: 'Sorry, something went wrong.' }]);
+            // Add an error message to the chat (without id)
+            setMessages(prev => [...prev, { sender: 'bot', text: 'Sorry, something went wrong.' }]);
         } finally {
             setIsLoading(false);
         }
@@ -139,8 +152,9 @@ const Chatbot = () => {
         <span className="chat-title">AI Health Assistant</span>
       </div>
       <div className="chat-messages">
-        {messages.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} />
+        {/* Use index as key, acceptable if list isn't reordered/filtered */}
+        {messages.map((msg, index) => (
+          <ChatMessage key={index} message={msg} />
         ))}
         {/* Dummy div to help scroll to bottom */}
         <div ref={messagesEndRef} />

@@ -62,7 +62,7 @@
 
 /* User Message Styling */
 .user-message {
-  background-color: #e5e5ea; /* Light grey for user (as per screenshot) */
+  background-color: #e2e2e2; /* Light grey for user (as per screenshot) */
   color: #000; /* Black text */
   align-self: flex-end; /* Align to the right */
   border-bottom-right-radius: 5px; /* Slightly different corner */
@@ -71,7 +71,7 @@
 
 /* Bot Message Styling */
 .bot-message {
-  background-color: #dcf8c6; /* Light green for bot (as per screenshot) */
+  background-color: #b1f3ff; /* Light green for bot (as per screenshot) */
   color: #000; /* Black text */
   align-self: flex-start; /* Align to the left */
   border-bottom-left-radius: 5px; /* Slightly different corner */
