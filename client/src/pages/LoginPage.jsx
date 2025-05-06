@@ -76,7 +76,8 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-container">
+        <div className="login-container"
+        style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '400px 20px 80px 20px' }}>
             <div className="floating-shape shape1"></div>
             <div className="floating-shape shape2"></div>
 

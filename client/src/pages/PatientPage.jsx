@@ -57,7 +57,8 @@ const Patient = () => {
   };
 
   return (
-    <div className="patient-container">
+    <div className="patient-container"
+          style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
       {alert.message && (
         <AlertBanner
           type={alert.type}

@@ -25,7 +25,8 @@ const Navbar = ({ selectedKey }) => {
     const isLoginPage = location.pathname === "/login";
     const isMFAPage = location.pathname === "/mfa/register";
 
-    selectedKey = currentItem ? currentItem.key : "1";
+    // Determine the selected key based on the current path
+    const currentSelectedKey = currentItem ? currentItem.key : null; // Use null if no match
 
     if (isRegisterPage || isLoginPage || isMFAPage) {
         return (
@@ -47,7 +48,8 @@ const Navbar = ({ selectedKey }) => {
             <Menu
                 theme="dark"
                 mode="horizontal"
-                defaultSelectedKeys={[selectedKey]}
+                // Use selectedKeys for dynamic highlighting
+                selectedKeys={currentSelectedKey ? [currentSelectedKey] : []}
                 style={{ flex: 1, minWidth: 0 }}
             >
                 {items1.map((item) => (

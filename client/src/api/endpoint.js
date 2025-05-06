@@ -22,4 +22,5 @@ export const ENDPOINTS = {
     doctorByEmail: (email) => `${API_BASE_URL}/doctors/doctor/${email}`,
     getDoctorByEmail: (email) => `${API_BASE_URL}/doctors/${email}/schedule`,
     getBookedTimes: `${API_BASE_URL}/doctors/getBookedTimes`,
+    chatbot: `${API_BASE_URL}/chat/sendMessage`,
 };

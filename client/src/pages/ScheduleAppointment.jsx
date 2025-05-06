@@ -103,7 +103,10 @@ const ScheduleAppointment = () => {
     };
 
     return (
-        <div className="schedule-container">
+        <div
+            className="schedule-container"
+            style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 120px 20px' }} // Increased bottom padding further
+        >
             {alert.message && (
                 <AlertBanner
                     type={alert.type}
