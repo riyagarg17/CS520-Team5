@@ -46,12 +46,13 @@ const Chatbot = () => {
     try {
       const userName = user?.name || "Guest";
       const userEmail = user?.email || "";
+      const userType = user?.type || "unknown";
+      const userGender = user?.gender || "unknown";
 
       const response = await sendChatMessageWithContext(
         userMessage.text,
         messages,
-        userName,
-        userEmail
+        {name: userName, email: userEmail, userType: userType, userGender: userGender} // Pass user information
       );
 
       console.log("Response from server:", response);

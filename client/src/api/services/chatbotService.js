@@ -1,12 +1,11 @@
 import fetchClient from "../client";
 import { ENDPOINTS } from "../endpoint";
 
-const sendChatMessage = async (url, message, chat_history, name, email) => {
+const sendChatMessage = async (url, message, chat_history, userInformation) => {
     const request = {
         message: message,
         chat_history: chat_history,
-        name: name,
-        email: email,
+        userInformation: userInformation,
     };
     return fetchClient(url, {
         method: "POST",
@@ -14,10 +13,10 @@ const sendChatMessage = async (url, message, chat_history, name, email) => {
     });
 }
 
-export const sendChatMessageWithContext = async (message, chat_history, name, email) => {
+export const sendChatMessageWithContext = async (message, chat_history, userInformation) => {
     try {
         const url = `${ENDPOINTS.chatbot}`;
-        return sendChatMessage(url, message, chat_history, name, email);
+        return sendChatMessage(url, message, chat_history, userInformation);
     } catch (error) {
         throw error;
     }
