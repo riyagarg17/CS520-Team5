@@ -1,0 +1,103 @@
+.appointments-container {
+    padding: 2rem;
+}
+
+.appointments-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.status-filter {
+    text-align: right;
+    margin-bottom: 1.5rem;
+}
+
+.appointments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+/* Card Styling */
+.pretty-card {
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 1rem;
+}
+
+.pretty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.doctor-name {
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.appointment-date {
+    margin: 0.25rem 0;
+    color: #595959;
+    font-size: 0.95rem;
+}
+
+/* Glowing Status Tags */
+.status-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 50px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    animation: glow 2s infinite;
+}
+
+.status-tag.confirmed {
+    background-color: #e6fffb;
+    color: #08979c;
+    box-shadow: 0 0 8px #36cfc9;
+}
+
+.status-tag.pending {
+    background-color: #fffbe6;
+    color: #d48806;
+    box-shadow: 0 0 8px #ffd666;
+}
+
+.status-tag.cancelled {
+    background-color: #fff1f0;
+    color: #cf1322;
+    box-shadow: 0 0 8px #ffa39e;
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.3);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+    }
+}
+
+.appointment-details p {
+    margin: 4px 0;
+}
+
+.appointment-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
