@@ -157,7 +157,8 @@ const ViewAppointments = () => {
       : appointments.filter((appt) => appt.status === statusFilter);
 
   return (
-    <div className="appointments-container">
+    <div className="appointments-container"
+    style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
       {alert.message && <AlertBanner type={alert.type} message={alert.message} onClose={() => setAlert({ type: null, message: "" })} />}
 
       <Title level={2} className="appointments-header">

@@ -6,6 +6,7 @@ import { useUserContext } from "../context/UserContext";
 import "../styles/Chatbot.css";
 import doctorIcon from '../assets/doctor_icon.jpg'; // Import the image
 import { sendChatMessageWithContext } from "../api/services/chatbotService"; // Import the service for sending messages
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 // TODO: analyze how chathistory is stored, maybe store after page refresh?
 const Chatbot = () => {
@@ -16,6 +17,7 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUserContext(); // Get user context
   const messagesEndRef = useRef(null); // Ref for scrolling
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Function to scroll to the bottom of the messages
   const scrollToBottom = () => {
@@ -99,6 +101,8 @@ const Chatbot = () => {
     }
   };
 
+  const homePath = user?.type === "doctor" ? "/doctor" : "/patient";
+
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -133,6 +137,23 @@ const Chatbot = () => {
         onSend={handleSendMessage}
         isLoading={isLoading}
       />
+      <button
+        onClick={() => navigate(homePath)}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          padding: '10px 20px',
+          backgroundColor: 'blue',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          zIndex: 1000, // Ensure it's above other elements
+        }}
+      >
+        Home
+      </button>
     </div>
   );
 };

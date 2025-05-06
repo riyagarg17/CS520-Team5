@@ -176,7 +176,8 @@ const RegistrationPage = () => {
     };
 
     return (
-        <div className="registration-container">
+        <div className="registration-container"
+        style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
             <Form
                 name="register"
                 onFinish={onFinish}

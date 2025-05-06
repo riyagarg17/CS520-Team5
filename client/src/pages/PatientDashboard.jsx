@@ -53,7 +53,8 @@ const HealthPage = () => {
   }
 
   return (
-    <div className="health-page-container">
+    <div className="health-page-container"
+    style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
       <Title level={2} className="health-header">Your Health Dashboard, {user?.name || "Patient"}!</Title>
 
       <Row gutter={[24, 24]} justify="center">

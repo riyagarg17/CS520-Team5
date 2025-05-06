@@ -21,7 +21,12 @@ let doctorAgentExecutor, patientAgentExecutor; // Declare agentExecutor variable
 
         const systemPrompt = `You are a helpful assistant. You will be given a user message and you need to respond in a way that is helpful and informative. \
                                 Only respond to requets related to answering questions about the patient's diabetes health dashboard. Only use tools that are allowed to be used for the current user (either patient or doctor).\
-                                Make sure your responses are clear and concise. Use their name when addressing them and be friendly.`;
+                                Make sure your responses are clear and concise. Use their name when addressing them and be friendly.\
+                                If the user is looking for more information that you do no have, point them towards the other dashboard features, which include: \
+                                1. Health overview: This includes the patient's blood sugar levels, weight, and other health metrics.\
+                                2. Appointments: This includes the patient's upcoming appointments with their doctor, and new ones can be scheduled.\
+                                3. Chatbot: This is the current chat interface where the user can ask questions and get answers.\
+                                `;
         const userInformation = "The patient's name is {name}. Their email is {email}. The user is a {userType}. The user's gender is {userGender}.\n";
         const prompt = ChatPromptTemplate.fromMessages([
             ["system", systemPrompt + userInformation],

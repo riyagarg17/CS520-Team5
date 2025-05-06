@@ -124,7 +124,8 @@ const DoctorAppointments = () => {
   };
 
   return (
-    <div className="doctor-appointments-container">
+    <div className="doctor-appointments-container"
+    style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
       {alert.message && (
         <AlertBanner
           type={alert.type}
