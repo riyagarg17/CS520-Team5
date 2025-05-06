@@ -106,7 +106,6 @@ const HealthPage = () => {
         </Col>
       </Row>
 
-            {/* Add the ChatbotIcon component here */}
             <ChatbotIcon />
     </div>
   );

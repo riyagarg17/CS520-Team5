@@ -1,59 +1,88 @@
+// filepath: /Users/samonuallain/CS520-Team5/backend/controllers/chatbotController.js
 require('dotenv').config();
 
-// filepath: /Users/samonuallain/CS520-Team5/backend/controllers/chatbotController.js
 const { ChatOpenAI } = require("@langchain/openai");
 const { createOpenAIFunctionsAgent, AgentExecutor } = require("langchain/agents");
-const { HumanMessage, AIMessage, SystemMessage } = require("@langchain/core/messages");
+const { HumanMessage, AIMessage } = require("@langchain/core/messages");
 const { ChatPromptTemplate, MessagesPlaceholder } = require("@langchain/core/prompts");
 const tools = require("./chatbotTools.js");
 
-console.log('Creating agent...');
+let agentExecutor; // Declare agentExecutor variable in the module scope
 
-const llm = new ChatOpenAI({
-  model: "gpt-3.5-turbo",
-  temperature: 0,
-});
+// Use an async IIFE to initialize the agent
+(async () => {
+    try {
+        console.log('Creating agent...');
 
-const systemPrompt = `You are a helpful assistant. You will be given a user message and you need to respond in a way that is helpful and informative. Only respond to requets related to answering questions about the patient's diabetes health dashboard.`;
-const userInformation = "The patient's name is {name}. Their email is {email}."
-const prompt = ChatPromptTemplate.fromMessages([
-    ["system", systemPrompt + userInformation],
-    new MessagesPlaceholder("chat_history"),
-    ["user", "{input}"],
-    new MessagesPlaceholder("agent_scratchpad"),
-]);
+        const llm = new ChatOpenAI({
+            model: "gpt-3.5-turbo",
+            temperature: 0,
+        });
 
-const agent = await createOpenAIFunctionsAgent({
-    llm,
-    tools,
-    prompt,
-}).catch((error) => {
-    console.error("Error creating agent:", error);
-    throw error; // Rethrow the error to be handled by the caller
+        const systemPrompt = `You are a helpful assistant. You will be given a user message and you need to respond in a way that is helpful and informative. \
+                                Only respond to requets related to answering questions about the patient's diabetes health dashboard. Make sure your responses are clear and concise.`;
+        const userInformation = "The patient's name is {name}. Their email is {email}."
+        const prompt = ChatPromptTemplate.fromMessages([
+            ["system", systemPrompt + userInformation],
+            new MessagesPlaceholder("chat_history"),
+            ["user", "{input}"],
+            new MessagesPlaceholder("agent_scratchpad"),
+        ]);
+
+        const agent = await createOpenAIFunctionsAgent({ // Now await is inside an async function
+            llm,
+            tools,
+            prompt,
+        });
+
+        agentExecutor = new AgentExecutor({ // Assign the created executor to the module-scoped variable
+            agent,
+            tools,
+        });
+
+        console.log('Agent created successfully.');
+    } catch (error) {
+        console.error("Error creating agent:", error);
+        // Optionally handle the error more gracefully, e.g., prevent the server from starting
+        process.exit(1); // Exit if agent creation fails
+    }
+})();
+
+
+function convertHistory(messages) {
+    return messages.map((message) => {
+        if (message.sender === "user") {
+            return new HumanMessage(message.text);
+        } else if (message.sender === "bot") {
+            return new AIMessage(message.text);
+        }
+        return null; // Handle unexpected message types
+    })
 }
-);
-
-const agentExecutor = new AgentExecutor({
-    agent,
-    tools,
-});
-console.log('Agent created.');
-
 
 exports.handleMessage = async (req, res) => {
-    const { input, name, email, chat_history } = req.body;
-    const result = await agentExecutor.invoke({
-        input: input,
-        name: name,
-        email: email,
-        chat_history: chat_history,
-      }).catch((error) => {
-        console.error("Error invoking agent:", error);
-        res.status(500).json({ error: "Internal server error" });
-        return;
-      });
+    const { message, name, email, chat_history } = req.body;
 
-    res.status(200).json({
-        result: result,
-    });
+    // Check if agentExecutor is initialized
+    if (!agentExecutor) {
+        console.error("Agent not initialized yet.");
+        return res.status(503).json({ error: "Service temporarily unavailable. Agent is initializing." });
+    }
+
+    try {
+        let convertedHistory = convertHistory(chat_history); // Convert chat history to the expected format
+        const result = await agentExecutor.invoke({
+            input: message,
+            name: name,
+            email: email,
+            chat_history: convertedHistory, // Ensure chat_history is an array
+        });
+
+        res.status(200).json({
+            result: result.output,
+        });
+    } catch (error) {
+        console.error("Error invoking agent:", error);
+        res.status(500).json({ error: "Internal server error during agent invocation" });
+    }
 }
