@@ -10,9 +10,9 @@ import "../styles/HealthPage.css";
 const { Title, Text } = Typography;
 
 const zoneColor = {
-  Green: "#52c41a",
-  Yellow: "#faad14",
-  Red: "#ff4d4f"
+  green: "#52c41a",
+  yellow: "#faad14",
+  red: "#ff4d4f"
 };
 
 const iconMap = {
@@ -32,6 +32,7 @@ const HealthPage = () => {
       const fetchHealthData = async () => {
         try {
           const response = await getPatientHealthDetails(user.email);
+          console.log("Health data from backend:", response);
           setHealthData(response);
         } catch (error) {
           console.error("Error fetching health data:", error);
@@ -52,6 +53,9 @@ const HealthPage = () => {
     );
   }
 
+  console.log("Current healthData state:", healthData);
+  console.log("Risk Zone:", healthData.riskZone);
+
   return (
     <div className="health-page-container"
     style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
@@ -59,7 +63,7 @@ const HealthPage = () => {
 
       <Row gutter={[24, 24]} justify="center">
         {Object.entries(healthData).map(([key, value]) => {
-          if (key === "zone" || key === "_id") return null;
+          if (key === "zone" || key === "_id" || key === "riskZone") return null;
           return (
             <Col xs={24} sm={12} md={8} lg={6} key={key}>
               <motion.div
@@ -85,23 +89,18 @@ const HealthPage = () => {
           >
             <Card
               className="zone-card"
-              style={{ borderLeft: `10px solid ${zoneColor[healthData.zone]}` }}
+              style={{ borderLeft: `10px solid ${zoneColor[healthData.riskZone]}` }}
             >
               <div className="zone-header">
-                <Title level={4}>Zone Status: <span style={{ color: zoneColor[healthData.zone] }}>{healthData.zone}</span></Title>
+                <Title level={4}>Zone Status: <span style={{ color: zoneColor[healthData.riskZone] }}>{healthData.riskZone?.toUpperCase()}</span></Title>
               </div>
-              {healthData.zone === "Red" ? (
-                <div className="zone-warning">
-                  <ExclamationCircleOutlined style={{ fontSize: "20px", color: "#ff4d4f", marginRight: 8 }} />
-                  <Text type="danger">You are in the red zone. Please schedule an appointment immediately.</Text>
-                  <br /><br />
-                  <Button type="primary" href="/schedule" danger>
-                    Schedule Appointment
-                  </Button>
-                </div>
-              ) : (
-                <Text>Your vitals look good. Keep monitoring regularly!</Text>
-              )}
+              <Text>
+                {healthData.riskZone === 'green' ? 
+                  "Your vitals are in a healthy range. Keep up the good work!" :
+                  healthData.riskZone === 'yellow' ?
+                  "Your vitals need attention. Consider consulting your doctor soon." :
+                  "Your vitals require immediate attention. Please consult your doctor as soon as possible."}
+              </Text>
             </Card>
           </motion.div>
         </Col>

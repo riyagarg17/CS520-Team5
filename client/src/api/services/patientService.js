@@ -3,10 +3,11 @@ import { ENDPOINTS } from "../endpoint";
 
 export const updateHealthDetails = async (email, healthDetails) => {
   const url = `${ENDPOINTS.updatePatient}`;
-  return fetchClient(url, {
+  const response = await fetchClient(url, {
     method: "POST",
     body: JSON.stringify({ email, health_details: healthDetails }),
   });
+  return response;
 };
 
 export const getPatientHealthDetails = async (email) => {
@@ -18,12 +19,14 @@ export const getPatientHealthDetails = async (email) => {
         },
         body: JSON.stringify({ email }),
       });
-      // console.log("response from backend patient details: ", response)
+      console.log("Raw response from backend:", response);
+      
       if (!response.ok) {
         throw new Error(`Failed to fetch health details: ${response.status}`);
       }
   
       const data = await response.json();
+      console.log("Parsed health details data:", data);
       return data.health_details; 
     } catch (error) {
       console.error("getPatientHealthDetails error:", error);

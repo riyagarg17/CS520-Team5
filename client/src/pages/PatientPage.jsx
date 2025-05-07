@@ -42,10 +42,13 @@ const Patient = () => {
       health_details: values,
     };
     try {
-      await updateHealthDetails(user.email, values);
+      const response = await updateHealthDetails(user.email, values);
       setUser((prev) => ({
         ...prev,
-        health_details: values,
+        health_details: {
+          ...values,
+          riskZone: response.riskZone
+        },
       }));
       showAlert("success", "Your health metrics were saved successfully!");
       setTimeout(() => {
@@ -53,6 +56,19 @@ const Patient = () => {
       }, 1500);
     } catch (error) {
       showAlert("error", "Could not update your health information. Please try again.");
+    }
+  };
+
+  const getRiskZoneColor = (zone) => {
+    switch (zone) {
+      case 'red':
+        return '#ff4d4f';
+      case 'yellow':
+        return '#faad14';
+      case 'green':
+        return '#52c41a';
+      default:
+        return '#d9d9d9';
     }
   };
 

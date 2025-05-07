@@ -1,0 +1,63 @@
+Diabetes Risk Classifier Implementation Changes
+Date: March 19, 2024
+
+Files Modified:
+1. backend/utils/modelPredictor.js
+   - Added predictRisk function to spawn Python process
+   - Implemented zone mapping (0: green, 1: yellow, 2: red)
+
+2. backend/utils/predict.py
+   - Created new file for model prediction
+   - Added feature scaling using StandardScaler
+   - Implemented error handling and logging
+   - Added probability output for better debugging
+
+3. backend/utils/test_prediction.py
+   - Created test script for model predictions
+   - Added feature scaling test
+   - Implemented detailed logging of predictions
+
+4. backend/controllers/patientController.js
+   - Modified updateHealthDetails to include risk prediction
+   - Added risk zone to response data
+
+5. client/src/api/services/patientService.js
+   - Updated updateHealthDetails to handle risk zone response
+
+6. client/src/pages/PatientDashboard.jsx
+   - Added dynamic risk zone display
+   - Implemented color-coded zone status
+   - Added contextual messages based on risk level
+
+Required Files:
+1. diabetes_rf_model.pkl - Trained Random Forest model
+2. scaler.pkl - StandardScaler for feature normalization
+
+Commands to Run:
+
+1. Start Backend Server:
+   ```bash
+   cd backend
+   source venv/bin/activate  # Activate virtual environment
+   npm start
+   ```
+
+2. Start Frontend Client:
+   ```bash
+   cd client
+   npm start
+   ```
+
+3. Test Prediction Script:
+   ```bash
+   cd backend/utils
+   source ../venv/bin/activate  # Activate virtual environment
+   python3 test_prediction.py
+   ```
+
+Required Python Packages:
+- scikit-learn
+- numpy
+- joblib
+
+Note: Make sure both model files (diabetes_rf_model.pkl and scaler.pkl) are in the root directory of the project. 
