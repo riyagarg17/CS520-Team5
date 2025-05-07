@@ -47,7 +47,24 @@ To set up and run the project, follow these steps:
    npm install 
    ```
 
-4. **Run the Application**
+4. **Configure Environment Variables**
+   Create a `.env` file in the `backend` directory with the following variables:
+   ```env
+   # MongoDB Connection
+   MONGODB_URI=your_mongodb_uri
+
+   # JWT Secret
+   JWT_SECRET=your_jwt_secret
+
+   # MFA Configuration
+   MFA_SECRET=your_mfa_secret
+   MFA_ISSUER=CareCompass
+   MFA_ALGORITHM=sha1
+   MFA_DIGITS=6
+   MFA_PERIOD=30
+   ```
+
+5. **Run the Application**
    ```sh
    npm run
    ```
@@ -66,6 +83,8 @@ To set up and run the project, follow these steps:
   source venv/bin/activate
   ```
 - The virtual environment is required for the risk prediction model to work properly
+- Multi-Factor Authentication (MFA) requires proper configuration in the backend/.env file
+- MFA uses TOTP (Time-based One-Time Password) for secure authentication
 
 For any issues or further assistance, contact the development team.
 
