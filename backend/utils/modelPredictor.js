@@ -5,8 +5,8 @@ const predictRisk = (healthData) => {
     return new Promise((resolve, reject) => {
         console.log("Starting prediction with data:", healthData);
         
-        // Create a Python process
-        const pythonProcess = spawn('python3', [
+        // Create a Python process using the virtual environment
+        const pythonProcess = spawn(path.join(__dirname, '../../venv/bin/python3'), [
             path.join(__dirname, 'predict.py'),
             JSON.stringify(healthData)
         ]);
@@ -43,9 +43,9 @@ const predictRisk = (healthData) => {
                 
                 // Map prediction to zone colors
                 const zoneMap = {
-                    0: 'green',  // Low risk (healthy values)
-                    1: 'yellow', // Medium risk
-                    2: 'red'     // High risk
+                    0: 'Green',  // Low risk (healthy values)
+                    1: 'Yellow', // Medium risk
+                    2: 'Red'     // High risk
                 };
                 
                 const zone = zoneMap[prediction];
