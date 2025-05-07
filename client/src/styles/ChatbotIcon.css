@@ -1,0 +1,52 @@
+.chatbot-container {
+  position: fixed;
+  bottom: 30px; /* Adjust as needed */
+  right: 30px; /* Adjust as needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000; /* Ensure it's above other content */
+  text-decoration: none; /* Remove underline from link */
+  color: inherit; /* Inherit text color */
+}
+
+.chatbot-icon {
+  width: 80px; /* Adjust size as needed */
+  height: 80px; /* Adjust size as needed */
+  border-radius: 50%;
+  background-color: #e6f7ff; /* Placeholder background */
+  border: 2px solid #91d5ff;
+  display: block; /* Prevents extra space below image */
+  /* margin-top: -15px; Remove negative margin */
+  position: relative; /* Needed for overlap */
+  z-index: 1; /* Icon below bubble */
+}
+
+.speech-bubble {
+  background-color: #333;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 15px;
+  margin-bottom: 15px; /* Increased space between bubble and icon */
+  max-width: 150px; /* Limit width */
+  text-align: center;
+  font-size: 14px;
+  position: relative; /* Needed for the tail */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 2; /* Bubble above icon */
+}
+
+/* Simple triangle tail for the speech bubble */
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; /* Position the tail */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #333; /* Match bubble background */
+}

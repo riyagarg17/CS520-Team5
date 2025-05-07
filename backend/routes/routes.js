@@ -1,21 +1,14 @@
-import express from "express"; 
-import {createPatient, updatePatientById, getPatientById, deletePatientById} from "../controllers/PatientControllers.js";
+const express = require('express');
+const router = express.Router();
 
+// Import route modules
+const patientRoutes = require('./patientRoutes');
+const doctorRoutes = require('./doctorRoutes'); 
+const chatbotRoutes = require('./chatbotRoutes');
 
-const router = express.Router(); 
+// Mount them with base paths
+router.use('/patients', patientRoutes);
+router.use('/doctors', doctorRoutes);
+router.use('/chat', chatbotRoutes);
 
-router.post("/addPatient", createPatient);
-router.put("/updatePatient/:id", updatePatientById);
-router.get("/getPatient/:id", getPatientById);
-router.delete("/deletePatient/:id", deletePatientById);
-
-/*
-
-router.post("/", function); 
-router.get()
-router.put()
-router.delete()
-
-*/
-
-export default router; 
+module.exports = router;

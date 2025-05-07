@@ -73,9 +73,9 @@ const RegistrationPage = () => {
     };
 
     const onFinish = (values) => {
-        let data = {};
+        let patientData = {};
         if (userType === "patient") {
-            data = {
+            patientData = {
                 email: values.email,
                 name: values.name,
                 dob: values.dob,
@@ -83,8 +83,9 @@ const RegistrationPage = () => {
                 password: values.password,
                 pincode: values.pincode,
             };
-            registerPatient(data)
+            registerPatient(patientData)
                 .then((data) => {
+                    console.log("Backend response:", data); 
                     if (data.status_code === 400) {
                         notification.error({
                             message: "Registration Failed",
@@ -93,7 +94,8 @@ const RegistrationPage = () => {
                         });
                     } else {
                         setUser({ ...data.body, type: userType });
-                        navigate("/mfa/register");
+                        navigate("/patient");
+                        // navigate("/mfa/register"); Ansh needs to add this
                     }
                 })
                 .catch((error) => {
@@ -106,15 +108,7 @@ const RegistrationPage = () => {
                 });
         }
         if (userType === "doctor") {
-            data = {
-                email: values.email,
-                name: values.name,
-                dob: values.dob,
-                gender: values.gender,
-                password: values.password,
-                pincode: values.pincode,
-            };
-            registerDoctor(data)
+            registerDoctor(values, licenseFile)
                 .then((data) => {
                     if (data.status_code === 400) {
                         notification.error({
@@ -124,9 +118,14 @@ const RegistrationPage = () => {
                             key: "registration-failed",
                         });
                     } else {
-                        notification.destroy("registration-failed");
+                        // notification.destroy("registration-failed");
+                        notification.success({
+                            message: "Registration Successful",
+                            description: `Welcome Dr. ${data.body.name}!`,
+                          });
                         setUser({ ...data.body, type: userType });
-                        navigate("/mfa/register");
+                        navigate("/doctor");
+                        // navigate("/mfa/register"); Ansh to complete this 
                     }
                 })
                 .catch((error) => {
@@ -177,7 +176,8 @@ const RegistrationPage = () => {
     };
 
     return (
-        <div className="registration-container">
+        <div className="registration-container"
+        style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
             <Form
                 name="register"
                 onFinish={onFinish}

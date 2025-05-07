@@ -27,7 +27,8 @@ const LoginPage = () => {
         const isTesting = params.has("test");
         const loginUrl =
             role === "patient" ? ENDPOINTS.patientLogin : ENDPOINTS.doctorLogin;
-
+        
+        console.log("login url: ", loginUrl)
         fetch(loginUrl, {
             method: "POST",
             headers: {
@@ -55,7 +56,9 @@ const LoginPage = () => {
                     if (isTesting) {
                         navigate(role === "doctor" ? "/doctor" : "/patient");
                     } else {
-                        navigate(`/mfa/register`);
+                        navigate(role === "doctor" ? "/doctor" : "/patient");
+                        // navigate(`/mfa/register`); 
+                        // Ansh to implement this; only if not testing, uncomment later
                     }
                 }
             })
@@ -73,7 +76,8 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-container">
+        <div className="login-container"
+        style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '400px 20px 80px 20px' }}>
             <div className="floating-shape shape1"></div>
             <div className="floating-shape shape2"></div>
 
