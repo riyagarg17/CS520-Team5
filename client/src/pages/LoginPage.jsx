@@ -8,10 +8,14 @@ import Lottie from "lottie-react";
 import doctorAnimation from "../assets/doctor-lottie.json";
 import logo from "../assets/logo.png";
 import "../styles/LoginPage.css";
+import MFAVerification from "../components/MFAVerification";
 
 const LoginPage = () => {
     const [role, setRole] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showMFA, setShowMFA] = useState(false);
+    const [email, setEmail] = useState("");
+    const [tempToken, setTempToken] = useState("");
     const navigate = useNavigate();
     const { setUser } = useUserContext();
     const location = useLocation();
@@ -28,7 +32,7 @@ const LoginPage = () => {
         const loginUrl =
             role === "patient" ? ENDPOINTS.patientLogin : ENDPOINTS.doctorLogin;
         
-        console.log("login url: ", loginUrl)
+        console.log("login url: ", loginUrl);
         fetch(loginUrl, {
             method: "POST",
             headers: {
@@ -44,6 +48,11 @@ const LoginPage = () => {
                         description: data.detail || "Invalid credentials",
                         duration: 3,
                     });
+                } else if (data.requiresMFA) {
+                    console.log('MFA required, showing verification screen');
+                    setEmail(email);
+                    setTempToken(data.tempToken);
+                    setShowMFA(true);
                 } else {
                     notification.success({
                         message: "Login Successful",
@@ -57,8 +66,6 @@ const LoginPage = () => {
                         navigate(role === "doctor" ? "/doctor" : "/patient");
                     } else {
                         navigate(role === "doctor" ? "/doctor" : "/patient");
-                        // navigate(`/mfa/register`); 
-                        // Ansh to implement this; only if not testing, uncomment later
                     }
                 }
             })
@@ -74,6 +81,16 @@ const LoginPage = () => {
                 setLoading(false);
             });
     };
+
+    const handleMFAComplete = (userData) => {
+        console.log('MFA verification complete, navigating to dashboard');
+        setUser({ ...userData, type: role });
+        navigate(role === "doctor" ? "/doctor" : "/patient");
+    };
+
+    if (showMFA) {
+        return <MFAVerification email={email} onComplete={handleMFAComplete} tempToken={tempToken} />;
+    }
 
     return (
         <div className="login-container"
@@ -136,24 +153,29 @@ const LoginPage = () => {
 
                     <Form.Item>
                         <Button
-                            id="login-button"
                             type="primary"
                             htmlType="submit"
-                            className="login-button"
-                            disabled={loading}
+                            loading={loading}
+                            block
+                            size="large"
+                            style={{ 
+                                background: '#1890ff',
+                                height: '40px',
+                                fontSize: '16px',
+                                marginBottom: 16
+                            }}
                         >
-                            {loading ? <Spin indicator={<LoadingOutlined spin />} /> : "Log In"}
+                            Login
                         </Button>
-                    </Form.Item>
-
-                    <Form.Item style={{ textAlign: "center" }}>
                         <Button
                             type="link"
-                            id="register-link"
+                            block
                             onClick={() => navigate("/register")}
-                            className="register-link"
+                            style={{ 
+                                fontSize: '14px'
+                            }}
                         >
-                            Don't have an account yet? Sign Up
+                            Don't have an account? Sign Up
                         </Button>
                     </Form.Item>
                 </Form>
