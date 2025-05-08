@@ -45,12 +45,12 @@ exports.updateHealthDetails = async (req, res) => {
   console.log("Update details: ", req.body)
   try {
     // Get risk prediction
-    const riskZone = await predictRisk(health_details);
+    const zone = await predictRisk(health_details);
     
-    // Add risk zone to health details
+    // Add zone to health details
     const updatedHealthDetails = {
       ...health_details,
-      riskZone
+      zone
     };
 
     const updatedPatient = await Patient.findOneAndUpdate(
@@ -66,7 +66,7 @@ exports.updateHealthDetails = async (req, res) => {
     res.status(200).json({ 
       message: "Health details updated", 
       patient: updatedPatient,
-      riskZone 
+      zone 
     });
   } catch (error) {
     console.error("Update Error:", error);

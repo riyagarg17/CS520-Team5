@@ -54,7 +54,7 @@ const HealthPage = () => {
   }
 
   console.log("Current healthData state:", healthData);
-  console.log("Risk Zone:", healthData.riskZone);
+  console.log("Zone:", healthData.zone);
 
   return (
     <div className="health-page-container"
@@ -63,7 +63,7 @@ const HealthPage = () => {
 
       <Row gutter={[24, 24]} justify="center">
         {Object.entries(healthData).map(([key, value]) => {
-          if (key === "zone" || key === "_id" || key === "riskZone") return null;
+          if (key === "zone" || key === "_id") return null;
           return (
             <Col xs={24} sm={12} md={8} lg={6} key={key}>
               <motion.div
@@ -89,15 +89,15 @@ const HealthPage = () => {
           >
             <Card
               className="zone-card"
-              style={{ borderLeft: `10px solid ${zoneColor[healthData.riskZone]}` }}
+              style={{ borderLeft: `10px solid ${zoneColor[healthData.zone?.toLowerCase()]}` }}
             >
               <div className="zone-header">
-                <Title level={4}>Zone Status: <span style={{ color: zoneColor[healthData.riskZone] }}>{healthData.riskZone?.toUpperCase()}</span></Title>
+                <Title level={4}>Zone Status: <span style={{ color: zoneColor[healthData.zone?.toLowerCase()] }}>{healthData.zone?.toUpperCase()}</span></Title>
               </div>
               <Text>
-                {healthData.riskZone === 'green' ? 
+                {healthData.zone?.toLowerCase() === 'green' ? 
                   "Your vitals are in a healthy range. Keep up the good work!" :
-                  healthData.riskZone === 'yellow' ?
+                  healthData.zone?.toLowerCase() === 'yellow' ?
                   "Your vitals need attention. Consider consulting your doctor soon." :
                   "Your vitals require immediate attention. Please consult your doctor as soon as possible."}
               </Text>
