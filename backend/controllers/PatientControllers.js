@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const Patient = require('../models/patient');
 const Doctor = require('../models/Doctor');
 const { v4: uuidv4 } = require('uuid');
+const { predictRisk } = require('../utils/modelPredictor');
 
 
 exports.registerPatient = async (req, res) => {
@@ -43,9 +44,18 @@ exports.updateHealthDetails = async (req, res) => {
   const { email, health_details } = req.body;
   console.log("Update details: ", req.body)
   try {
+    // Get risk prediction
+    const zone = await predictRisk(health_details);
+    
+    // Add zone to health details
+    const updatedHealthDetails = {
+      ...health_details,
+      zone
+    };
+
     const updatedPatient = await Patient.findOneAndUpdate(
       { email: email },
-      { $set: { health_details } },
+      { $set: { health_details: updatedHealthDetails } },
       { new: true }
     );
 
@@ -53,7 +63,11 @@ exports.updateHealthDetails = async (req, res) => {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    res.status(200).json({ message: "Health details updated", patient: updatedPatient });
+    res.status(200).json({ 
+      message: "Health details updated", 
+      patient: updatedPatient,
+      zone 
+    });
   } catch (error) {
     console.error("Update Error:", error);
     res.status(500).json({ message: "Update failed", error });
@@ -63,17 +77,20 @@ exports.updateHealthDetails = async (req, res) => {
 exports.getHealthDetails = async (req, res) => {
   try {
     const { email } = req.body;
-    // console.log("get patient details backend: ", req.body)
+    console.log("Getting health details for email:", email);
+    
     if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
 
     const patient = await Patient.findOne({ email });
+    console.log("Found patient:", patient);
 
     if (!patient) {
       return res.status(404).json({ message: "Patient not found." });
     }
 
+    console.log("Sending health details:", patient.health_details);
     res.status(200).json({ health_details: patient.health_details || {} });
   } catch (error) {
     console.error("Error fetching health details:", error);
