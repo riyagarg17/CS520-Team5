@@ -146,6 +146,17 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
+exports.getAllPatients = async (req, res) => {
+  try {
+    const patients = await Patient.find({}, "-password -medicalCertificate"); // exclude sensitive info
+    res.status(200).json({ status_code: 200, body: patients });
+  } catch (error) {
+    console.error("Error fetching patients:", error);
+    res.status(500).json({ status_code: 500, message: "Internal Server Error" });
+  }
+}
+
+
 exports.getBookedTimes = async (req, res) => {
   try {
     // console.log("get booked: ", req.body)

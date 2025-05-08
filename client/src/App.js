@@ -19,6 +19,7 @@ import DoctorAppointments from "./pages/DoctorAppointments";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import HealthPage from "./pages/PatientDashboard";
 import Chatbot from "./pages/Chatbot";
+import DoctorViewPatient from "./pages/DoctorViewPatient";
 
 const { Content } = Layout;
 
@@ -52,6 +53,8 @@ const App = () => {
                                     <Route path="/patient/appointments" element={<ViewAppointments />} />
                                     <Route path="/patient/dashboard" element={<HealthPage />} />
                                     <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+                                    <Route path="/health/:patientemail" element={<DoctorViewPatient />} />
+                                    <Route path="/patients/healthDetails/:email" element={<DoctorViewPatient />} />
                                     <Route path="/chatassist" element={<Chatbot />} />
                                 </Routes>
                             </div>

@@ -93,3 +93,20 @@ export const updateAppointment = async (payload) => {
     throw error;
   }
 };
+
+export const getPatientHealthDetailsByEmail = async (email) => {
+  const response = await fetch("http://localhost:8080/patients/healthDetails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch patient health details");
+  }
+
+  const data = await response.json();
+  return data.health_details;
+};

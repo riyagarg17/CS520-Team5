@@ -9,5 +9,6 @@ router.post('/addDoctor', upload.single('license'), doctorController.registerDoc
 router.get('/appointments/:email', doctorController.getDoctorAppointments);
 router.put('/appointments/:appointment_id/status', doctorController.updateAppointmentStatus);
 router.get("/getAllDoctors", doctorController.getAllDoctors);
+router.get("/getAllPatients", doctorController.getAllPatients);
 router.post("/getBookedTimes", doctorController.getBookedTimes);
 module.exports = router;
