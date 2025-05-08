@@ -35,7 +35,7 @@ const loginDoctor = async (Model, req, res) => {
     try {
       const mfaCode = await sendMFACode(email);
       const tempToken = jwt.sign(
-        { email: user.email, type: 'doctor' },
+        { userId: user._id, userType: 'doctor', email },
         process.env.JWT_SECRET,
         { expiresIn: '5m' }
       );
@@ -249,9 +249,10 @@ const verifyMFA = async (req, res) => {
       return res.status(401).json({ message: 'Login session expired' });
     }
 
-    // Get user data based on type
+    // Get user data based on type (handle both type and userType)
     let user;
-    if (decoded.type === 'patient') {
+    const userType = decoded.userType || decoded.type;
+    if (userType === 'patient') {
       user = await Patient.findOne({ email });
     } else {
       user = await Doctor.findOne({ email });
@@ -267,7 +268,7 @@ const verifyMFA = async (req, res) => {
       {
         userId: user._id,
         email: user.email,
-        type: decoded.type
+        type: userType
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
