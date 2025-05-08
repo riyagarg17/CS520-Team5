@@ -1,0 +1,23 @@
+.doctor-dashboard-container {
+    padding: 2rem;
+}
+
+.patient-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease-in-out;
+}
+
+.patient-card:hover {
+    transform: scale(1.02);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.patient-details {
+    line-height: 1.8;
+}
