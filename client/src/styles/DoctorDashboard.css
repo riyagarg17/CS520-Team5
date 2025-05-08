@@ -1,0 +1,23 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto; /* ✅ allows vertical scrolling */
+  }
+
+  .title { 
+
+    font-size: 30px; 
+    font-weight: bold; 
+    color: #111827; 
+    margin-bottom: 20px; 
+    text-align: center; 
+  }
+
+  .subtitle { 
+    font-size: 18px; 
+    ; 
+    color: #111827; 
+    margin-bottom: 10px; 
+    text-align: center; 
+  }

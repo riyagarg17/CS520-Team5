@@ -247,3 +247,13 @@ exports.updateAppointment = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getAllPatients = async (req, res) => {
+  try {
+    const patients = await Patient.find({}, "-password -medicalCertificate"); // exclude sensitive info
+    res.status(200).json({ status_code: 200, body: patients });
+  } catch (error) {
+    console.error("Error fetching patients:", error);
+    res.status(500).json({ status_code: 500, message: "Internal Server Error" });
+  }
+}
