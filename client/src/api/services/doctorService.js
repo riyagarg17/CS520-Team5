@@ -26,3 +26,25 @@ export const updateAppointmentStatus = async ({ appointment_id, newStatus, docto
     throw error;
   }
 };
+
+export const getDoctorPatients = async (email) => {
+  try {
+    const url = ENDPOINTS.getDoctorPatients;
+    const response = await fetchClient(url, {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching doctor patients:", error);
+    throw error;
+  }
+};
+
+export const alertPatient = async (email, name) => {
+  const url = `${API_BASE_URL}/doctors/alert-patient`;
+  return fetchClient(url, {
+    method: "POST",
+    body: JSON.stringify({ email, name }),
+  });
+};

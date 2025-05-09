@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const Doctor = require('../models/Doctor');
 const Patient = require('../models/patient');
 const sendEmail = require('../utils/emailService')
+const { sendAlertEmail } = require("../utils/emailService");
 
 exports.registerDoctor = async (req, res) => {
   // console.log("BODY:", req.body);
@@ -171,3 +172,41 @@ exports.getBookedTimes = async (req, res) => {
     res.status(500).json({ status_code: 500, message: "Server error" });
   }
 };
+
+exports.getDoctorPatients = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const doctor = await Doctor.findOne({ email });
+
+    if (!doctor || !doctor.patients) {
+      return res.status(404).json({ message: "Doctor not found or no patients." });
+    }
+
+    const patientEmails = doctor.patients.map(p => p.email);
+
+    const patients = await Patient.find({ email: { $in: patientEmails } });
+
+    res.status(200).json({ status_code: 200, body: patients });
+  } catch (error) {
+    console.error("Error fetching doctor patients:", error);
+    res.status(500).json({ status_code: 500, message: "Internal server error" });
+  }
+};
+
+exports.alertPatientByEmail = async (req, res) => {
+  const { email, name } = req.body;
+
+  if (!email || !name) {
+    return res.status(400).json({ message: "Patient email and name are required" });
+  }
+
+  try {
+    await sendAlertEmail(email, name);
+    return res.status(200).json({ message: "Alert sent successfully" });
+  } catch (err) {
+    console.error("Email send failed:", err);
+    return res.status(500).json({ message: "Failed to send alert" });
+  }
+};
+
