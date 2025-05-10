@@ -19,8 +19,7 @@ export const ENDPOINTS = {
     setDoctorAvailability: `${API_BASE_URL}/doctors/doctor/doctorSchedule`,
     sendEmail: `${API_BASE_URL}/email/send-email`,
     updateAppointmentStatus: (appointment_id) => `${API_BASE_URL}/doctors/appointments/${appointment_id}/status`,
-    doctorByEmail: (email) => `${API_BASE_URL}/doctors/doctor/${email}`,
-    getDoctorByEmail: (email) => `${API_BASE_URL}/doctors/${email}/schedule`,
+    getDoctorPatients: `${API_BASE_URL}/doctors/getPatients`,
     getBookedTimes: `${API_BASE_URL}/doctors/getBookedTimes`,
     chatbot: `${API_BASE_URL}/chat/sendMessage`,
 };
