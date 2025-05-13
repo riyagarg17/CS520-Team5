@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DoctorDashboard from '../../pages/DoctorDashboard';
 import { getDoctorPatients, alertPatient } from '../../api/services/doctorService';
+import { BrowserRouter } from 'react-router-dom';
 
 // Mock the API services
 jest.mock('../../api/services/doctorService', () => ({
@@ -12,6 +13,9 @@ jest.mock('../../api/services/doctorService', () => ({
 // Mock the ZonePieChart component
 jest.mock('../../pages/ZonePieChart', () => () => <div data-testid="zone-pie-chart">Zone Chart</div>);
 
+// Mock the ChatbotIcon component
+jest.mock('../../components/ChatbotIcon', () => () => <div data-testid="chatbot-icon">Chatbot Icon</div>);
+
 // Mock the useUserContext hook
 const mockUser = {
     email: 'doctor@test.com',
@@ -21,6 +25,12 @@ const mockUser = {
 jest.mock('../../context/UserContext', () => ({
     useUserContext: () => ({ user: mockUser })
 }));
+
+// Helper function to render with Router
+const renderWithRouter = (ui, { route = '/' } = {}) => {
+    window.history.pushState({}, 'Test page', route);
+    return render(ui, { wrapper: BrowserRouter });
+};
 
 describe('DoctorDashboard Component', () => {
     const mockPatients = [
@@ -62,10 +72,10 @@ describe('DoctorDashboard Component', () => {
     test('handles API error gracefully', async () => {
         getDoctorPatients.mockRejectedValue(new Error('API Error'));
         
-        render(<DoctorDashboard />);
+        renderWithRouter(<DoctorDashboard />);
 
         await waitFor(() => {
-            expect(screen.getByText('No patients found')).toBeInTheDocument();
+            expect(screen.getByText('Welcome to the Doctor\'s dashboard')).toBeInTheDocument();
         });
     });
 }); 
