@@ -162,7 +162,7 @@ const login = async (req, res) => {
     // Generate a temporary JWT token for the MFA verification step
     const tempToken = jwt.sign(
       { userId: user._id, userType, email },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET, 
       { expiresIn: '5m' }
     );
 
