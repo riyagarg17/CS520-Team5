@@ -1,0 +1,47 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import ZonePieChart from '../../pages/ZonePieChart';
+
+// Mock Chart.js
+jest.mock('react-chartjs-2', () => ({
+    Pie: () => <div data-testid="pie-chart">Pie Chart</div>
+}));
+
+describe('ZonePieChart Component', () => {
+    const mockPatients = [
+        { health_details: { zone: 'Red' } },
+        { health_details: { zone: 'Yellow' } },
+        { health_details: { zone: 'Green' } },
+        { health_details: { zone: 'Red' } },
+        { health_details: { zone: 'Green' } }
+    ];
+
+    test('renders pie chart with correct data', () => {
+        render(<ZonePieChart patients={mockPatients} />);
+        expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
+    });
+
+    test('handles empty patients array', () => {
+        render(<ZonePieChart patients={[]} />);
+        expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
+    });
+
+    test('handles patients with missing zone data', () => {
+        const patientsWithMissingData = [
+            { health_details: { zone: 'Red' } },
+            { health_details: {} },
+            { health_details: { zone: 'Green' } }
+        ];
+        render(<ZonePieChart patients={patientsWithMissingData} />);
+        expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
+    });
+
+    test('maintains correct container dimensions', () => {
+        const { container } = render(<ZonePieChart patients={mockPatients} />);
+        const chartContainer = container.firstChild;
+        expect(chartContainer).toHaveStyle({
+            maxWidth: '300px',
+            height: '250px'
+        });
+    });
+}); 
