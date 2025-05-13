@@ -37,10 +37,6 @@ const Patient = () => {
   };
 
   const handleFormSubmit = async (values) => {
-    const payload = {
-      email: user.email,
-      health_details: values,
-    };
     try {
       const response = await updateHealthDetails(user.email, values);
       setUser((prev) => ({

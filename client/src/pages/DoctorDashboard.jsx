@@ -52,14 +52,10 @@ const DoctorDashboard = () => {
 
     // getZoneStats: Calculates statistics about patient health zones (Red, Yellow, Green) and average health metrics.
     const getZoneStats = () => {
-        const counts = { Red: 0, Yellow: 0, Green: 0 };
         let totalGlucose = 0, totalBMI = 0, totalInsulin = 0, totalBP = 0;
         let bpReadings = 0;
 
         patients.forEach((p) => {
-            const zone = p.health_details?.zone;
-            if (zone && counts[zone] !== undefined) counts[zone]++;
-
             const hd = p.health_details;
             if (hd?.bloodGlucoseLevels) totalGlucose += hd.bloodGlucoseLevels;
             if (hd?.bmi) totalBMI += hd.bmi;
@@ -76,7 +72,6 @@ const DoctorDashboard = () => {
         const total = patients.length || 1;
 
         return {
-            counts,
             averages: {
                 glucose: (totalGlucose / total).toFixed(1),
                 bmi: (totalBMI / total).toFixed(1),
@@ -119,10 +114,10 @@ const DoctorDashboard = () => {
         return Math.abs(hash % 100);
     };
 
-    const { counts, averages } = getZoneStats();
+    const { averages } = getZoneStats();
 
     return (
-        <div className="doctor-dashboard-container">
+        <div className="doctor-dashboard-container" style={{ maxHeight: 'calc(100vh - 64px)', overflowY: 'auto', padding: '20px 20px 150px 20px' }}>
             <Title level={2}>Your Patients</Title>
 
             <div style={{ marginBottom: "1rem" }}>
@@ -190,7 +185,7 @@ const DoctorDashboard = () => {
             {showAnalytics && (
                 <div className="analytics-section" style={{ marginTop: 40 }}>
                     <Title level={4} style={{ marginTop: 32 }}>Zone Distribution</Title>
-                    <ZonePieChart/>
+                    <ZonePieChart patients={patients}/>
 
                     <div style={{ marginTop: 20, textAlign: "center" }}>
                         <Text><strong>Avg Blood Glucose:</strong> {averages.glucose} mg/dL</Text><br />

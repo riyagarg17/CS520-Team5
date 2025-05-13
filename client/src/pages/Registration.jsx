@@ -22,7 +22,6 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 
-// Import the CSS file with the correct path
 import "../styles/RegistrationPage.css";
 import {
     registerDoctor,
@@ -31,7 +30,6 @@ import {
 
 const { Text } = Typography;
 
-// RegistrationPage component: Handles user registration for both patients and doctors.
 const RegistrationPage = () => {
     const [form] = Form.useForm();
     const [userType, setUserType] = useState(null);
@@ -45,11 +43,8 @@ const RegistrationPage = () => {
         specialChar: false,
     });
     const [passwordFocused, setPasswordFocused] = useState(false);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true); // State to track the button disabled status
-    const [age, setAge] = useState(null);
     const { setUser } = useUserContext();
     const navigate = useNavigate();
-    const [licenseFile, setLicenseFile] = useState(null);
     const location = useLocation();
 
     const allValid = Object.values(passwordValid).every(Boolean);
@@ -113,7 +108,7 @@ const RegistrationPage = () => {
                 });
         }
         if (userType === "doctor") {
-            registerDoctor(values, licenseFile)
+            registerDoctor(values)
                 .then((data) => {
                     if (data.status_code === 400) {
                         notification.error({
@@ -166,21 +161,6 @@ const RegistrationPage = () => {
             passwordValid.specialChar &&
             passwordMatch &&
             allFieldsFilled
-        );
-    };
-
-    // handleFileChange: Updates the state with the selected medical license file for doctors.
-    const handleFileChange = ({ file }) => {
-        setLicenseFile(file);
-    };
-
-    // calculateMaxDate: Calculates the maximum allowed date of birth for doctor registration (must be at least 25 years old).
-    const calculateMaxDate = () => {
-        const today = new Date();
-        return new Date(
-            today.getFullYear() - 25,
-            today.getMonth(),
-            today.getDate()
         );
     };
 
@@ -372,46 +352,6 @@ const RegistrationPage = () => {
 
                 {userType === "doctor" && (
                     <>
-
-                        {
-                            <Form.Item
-                                name="license"
-                                label="Medical License"
-                                id="license"
-                                style={{ width: "100%" }}
-                                valuePropName="fileList"
-                                getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please upload your Medical License as a PDF file",
-                                    },
-                                    {
-                                        validator: (_, fileList) => {
-                                            const file = fileList?.[0];
-                                            if (file && file.type !== "application/pdf") {
-                                                return Promise.reject("Please upload a PDF file");
-                                            }
-                                            return Promise.resolve();
-                                        },
-                                    },
-                                ]}
-                                className="form-item"
-                            >
-                                <Upload
-                                    name="license"
-                                    id="license"
-                                    accept=".pdf"
-                                    beforeUpload={() => false} // Prevent automatic upload
-                                    onChange={handleFileChange}
-                                    fileList={licenseFile ? [licenseFile] : []}
-                                    maxCount={1}
-                                >
-                                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                                </Upload>
-                            </Form.Item>
-                        }
-
                         <Form.Item
                             name="dob"
                             label={
@@ -430,7 +370,8 @@ const RegistrationPage = () => {
                             <DatePicker
                                 style={{ width: "100%" }}
                                 disabledDate={(current) => {
-                                    const maxDate = calculateMaxDate();
+                                    const today = new Date();
+                                    const maxDate = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate());
                                     return current && current.isAfter(maxDate);
                                 }}
                                 id="dob"
@@ -530,7 +471,6 @@ const RegistrationPage = () => {
                             htmlType="submit"
                             className="registration-form-button"
                             id="register-button"
-                            //disabled={isButtonDisabled}
                         >
                             Register
                         </Button>
