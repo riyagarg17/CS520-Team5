@@ -4,6 +4,18 @@ const Doctor = require('../models/Doctor');
 const Patient = require("../models/patient");
 const { sendOTP, verifyOTP } = require('../utils/emailService');
 const { sendMFACode, verifyMFACode } = require('../utils/mfaService');
+const pino = require('pino');
+
+// Initialize pino logger
+const logger = pino({
+    level: process.env.LOG_LEVEL || 'info',
+    transport: {
+        target: 'pino-pretty', // Makes logs more readable during development
+        options: {
+            colorize: true
+        }
+    }
+});
 
 // Store temporary login data
 const pendingLogins = new Map();
@@ -12,11 +24,12 @@ const pendingLogins = new Map();
 const mfaTokens = new Map();
 
 const loginDoctor = async (Model, req, res) => {
-  console.log("login doctor: ", req.body)
+  logger.info("login doctor: ", req.body);
   const { password, email } = req.body;
   try {
     const user = await Model.findOne({ email });
     if (!user) {
+      logger.warn("Invalid email or password: ", email);
       return res.status(401).json({
         status_code: 401,
         message: "Invalid email or password",
@@ -67,7 +80,7 @@ const loginDoctor = async (Model, req, res) => {
 
 const loginUser = async (Model, req, res) => {
     const { email, password } = req.body;
-    console.log('Login attempt for:', email);
+    logger.info("Login attempt for user:", email);
   
     try {
       const user = await Model.findOne({ email });
