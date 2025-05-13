@@ -66,6 +66,7 @@ let doctorAgentExecutor, patientAgentExecutor; // Declare agentExecutor variable
 })();
 
 
+// Converts chat history from the client's format to Langchain's expected message format
 function convertHistory(messages) {
     return messages.map((message) => {
         if (message.sender === "user") {
@@ -80,6 +81,7 @@ function convertHistory(messages) {
 exports.handleMessage = async (req, res) => {
     const { message, userInformation, chat_history } = req.body;
     let agent = null;
+    // Select the appropriate agent (doctor or patient) based on the user type
     if (userInformation.userType === "doctor") {
         agent = doctorAgentExecutor;
         console.log("Using doctor agent executor");
@@ -97,6 +99,7 @@ exports.handleMessage = async (req, res) => {
 
     try {
         let convertedHistory = convertHistory(chat_history); // Convert chat history to the expected format
+        // Invoke the selected agent with the user's message, information, and chat history
         const result = await agent.invoke({
             input: message,
             name: userInformation.name,
@@ -106,6 +109,7 @@ exports.handleMessage = async (req, res) => {
             chat_history: convertedHistory, // Ensure chat_history is an array
         });
 
+        // Send the agent's output back to the client
         res.status(200).json({
             result: result.output,
         });

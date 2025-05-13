@@ -1,6 +1,8 @@
 const { DynamicTool } = require("@langchain/core/tools");
 const doctorController = require("./doctorController");
 
+// A helper function to make HTTP requests to the backend API.
+// It sets default headers and handles basic error checking.
 const fetchClient = async (url, options = {}) => {
   try {
       const response = await fetch(url, {
@@ -23,6 +25,7 @@ const fetchClient = async (url, options = {}) => {
 
 const API_BASE_URL = `http://localhost:${process.env.PORT}`; // Adjust this to your API base URL
 
+// Tool for doctors to retrieve their upcoming appointments.
 const getDoctorAppointments = new DynamicTool({
   name: "get_appointments",
   description: 'Gets the appointment details for a specific doctor email. This tool can only be used by users that have the doctor type. \
@@ -49,6 +52,7 @@ const getDoctorAppointments = new DynamicTool({
   },
 });
 
+// Tool for doctors to cancel an existing appointment.
 const updateDoctorAppointmentTool = new DynamicTool({
   name: "cancel_appointment",
   description: `Cancels a specific appointment. This tool can only be used by users that have the doctors type. \
@@ -90,6 +94,7 @@ const updateDoctorAppointmentTool = new DynamicTool({
   },
 });
 
+// Tool for patients to retrieve their upcoming appointments.
 const getPatientAppointmentsTool = new DynamicTool({
   name: "get_patient_appointments",
   description: `Gets the appointment details for a specific patient email. This tool can only be used by users that have the patient type.

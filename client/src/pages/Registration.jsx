@@ -31,6 +31,7 @@ import {
 
 const { Text } = Typography;
 
+// RegistrationPage component: Handles user registration for both patients and doctors.
 const RegistrationPage = () => {
     const [form] = Form.useForm();
     const [userType, setUserType] = useState(null);
@@ -53,10 +54,12 @@ const RegistrationPage = () => {
 
     const allValid = Object.values(passwordValid).every(Boolean);
 
+    // handleUserTypeChange: Sets the type of user being registered (patient or doctor).
     const handleUserTypeChange = (value) => {
         setUserType(value);
     };
 
+    // handlePasswordChange: Validates the password strength as the user types.
     const handlePasswordChange = (e) => {
         const value = e.target.value;
         setPasswordValid({
@@ -68,10 +71,12 @@ const RegistrationPage = () => {
         });
     };
 
+    // preventPasswordActions: Prevents copy, cut, and paste actions on password fields.
     const preventPasswordActions = (e) => {
         e.preventDefault();
     };
 
+    // onFinish: Handles the form submission, sending registration data to the backend.
     const onFinish = (values) => {
         let patientData = {};
         if (userType === "patient") {
@@ -140,10 +145,12 @@ const RegistrationPage = () => {
         }
     };
 
+    // handleSwitchRole: Allows the user to switch between patient and doctor registration forms.
     const handleSwitchRole = () => {
         setUserType(userType === "doctor" ? "patient" : "doctor");
     };
 
+    // isFormValid: Checks if all required fields are filled and passwords match.
     const isFormValid = () => {
         const fieldsValue = form.getFieldsValue();
         const confirmPassword = fieldsValue.confirm;
@@ -162,10 +169,12 @@ const RegistrationPage = () => {
         );
     };
 
+    // handleFileChange: Updates the state with the selected medical license file for doctors.
     const handleFileChange = ({ file }) => {
         setLicenseFile(file);
     };
 
+    // calculateMaxDate: Calculates the maximum allowed date of birth for doctor registration (must be at least 25 years old).
     const calculateMaxDate = () => {
         const today = new Date();
         return new Date(

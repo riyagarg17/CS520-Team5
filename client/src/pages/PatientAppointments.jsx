@@ -21,12 +21,15 @@ import "../styles/ViewAppointments.css";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
+
+// getGenderBasedAvatar: Generates a random avatar URL based on gender.
 const getGenderBasedAvatar = (gender) => {
   const base = gender?.toLowerCase() === "male" ? "men" : "women";
   const num = Math.floor(Math.random() * 100);
   return `https://randomuser.me/api/portraits/${base}/${num}.jpg`;
 };
 
+// ViewAppointments component: Displays and manages appointments for a logged-in patient.
 const ViewAppointments = () => {
   const { user } = useUserContext();
   const [appointments, setAppointments] = useState([]);
@@ -40,6 +43,7 @@ const ViewAppointments = () => {
   const [alert, setAlert] = useState({ type: null, message: "" });
   const navigate = useNavigate();
 
+  // useEffect hook to fetch patient's appointments when the component mounts or user changes.
   useEffect(() => {
     const fetchAppointments = async () => {
       if (!user?.email) return;
@@ -55,21 +59,25 @@ const ViewAppointments = () => {
     fetchAppointments();
   }, [user]);
 
+  // showAlert: Displays an alert banner for a short duration.
   const showAlert = (type, message) => {
     setAlert({ type, message });
     setTimeout(() => setAlert({ type: null, message: "" }), 5000);
   };
 
+  // showCancelModal: Opens the modal to confirm appointment cancellation.
   const showCancelModal = (appt) => {
     setAppointmentToCancel(appt);
     setCancelVisible(true);
   };
 
+  // showRescheduleModal: Opens the modal for rescheduling an appointment.
   const showRescheduleModal = (appointment) => {
     setSelectedAppointment(appointment);
     setRescheduleVisible(true);
   };
 
+  // handleReschedule: Submits the appointment reschedule request to the backend.
   const handleReschedule = async () => {
     if (!newDate || !newTime) return;
     try {
@@ -116,6 +124,7 @@ const ViewAppointments = () => {
   // };
 
 
+  // confirmCancelAppointment: Confirms and processes the cancellation of an appointment.
   const confirmCancelAppointment = async () => {
     try {
       await updateAppointment({
@@ -146,11 +155,13 @@ const ViewAppointments = () => {
   };
 
 
+  // getStatusTag: Returns a styled span element representing the appointment status.
   const getStatusTag = (status) => {
     const classes = `status-tag ${status.toLowerCase()}`;
     return <span className={classes}>{status}</span>;
   };
 
+  // filteredAppointments: Filters appointments based on the selected status filter.
   const filteredAppointments =
     statusFilter === "All"
       ? appointments

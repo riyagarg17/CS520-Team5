@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 
 const { Option } = Select;
 
+// DoctorAppointments component: Displays and manages appointments for a logged-in doctor.
 const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
@@ -31,6 +32,7 @@ const DoctorAppointments = () => {
   const [alert, setAlert] = useState({ type: null, message: "" });
   const { user } = useUserContext();
 
+  // useEffect hook to fetch doctor's appointments when the component mounts or user email changes.
   useEffect(() => {
     if (!user?.email) return;
   
@@ -60,11 +62,13 @@ const DoctorAppointments = () => {
   }, [user?.email]);
   
 
+  // showAlert: Displays an alert banner for a short duration.
   const showAlert = (type, message) => {
     setAlert({ type, message });
     setTimeout(() => setAlert({ type: null, message: "" }), 5000);
   };
 
+  // handleFilterChange: Updates the filtered appointments based on the selected status.
   const handleFilterChange = (value) => {
     setFilterStatus(value);
     setFilteredAppointments(
@@ -74,6 +78,7 @@ const DoctorAppointments = () => {
     );
   };
 
+  // getStatusTag: Returns a colored Ant Design Tag based on the appointment status.
   const getStatusTag = (status) => {
     const color = {
       Confirmed: "green",
@@ -84,6 +89,7 @@ const DoctorAppointments = () => {
     return <Tag color={color} className="glow-tag">{status.toUpperCase()}</Tag>;
   };
 
+  // handleStatusChange: Updates the status of an appointment (e.g., Confirmed, Cancelled).
   const handleStatusChange = async (id, newStatus, patient_email) => {
     try {
       await updateAppointmentStatus({
@@ -117,6 +123,7 @@ const DoctorAppointments = () => {
   };
   
 
+  // getGenderBasedAvatar: Generates a random avatar URL based on patient gender.
   const getGenderBasedAvatar = (gender) => {
     const base = gender?.toLowerCase() === "male" ? "men" : "women";
     const num = Math.floor(Math.random() * 100);

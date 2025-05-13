@@ -4,6 +4,8 @@ const Patient = require('../models/patient');
 const sendEmail = require('../utils/emailService')
 const { sendAlertEmail } = require("../utils/emailService");
 
+// Handles the registration of a new doctor.
+// It checks for existing users, hashes the password, and saves the doctor to the database.
 exports.registerDoctor = async (req, res) => {
   // console.log("BODY:", req.body);
   // console.log("FILES:", req.file);
@@ -67,7 +69,7 @@ exports.registerDoctor = async (req, res) => {
 };
 
 
-// Fetch appointments by doctor email
+// Fetches all appointments for a specific doctor based on their email.
 exports.getDoctorAppointments = async (req, res) => {
   try {
     const { email } = req.params;
@@ -85,7 +87,8 @@ exports.getDoctorAppointments = async (req, res) => {
   }
 };
 
-// Update status of a specific appointment
+// Updates the status of a specific appointment for both doctor and patient.
+// If the status is "Cancelled", it removes the appointment.
 exports.updateAppointmentStatus = async (req, res) => {
   try {
     // console.log("Change doctor appt status: ", req.body)
@@ -137,6 +140,7 @@ exports.updateAppointmentStatus = async (req, res) => {
 };
 
 
+// Retrieves a list of all doctors, excluding sensitive information like passwords and medical certificates.
 exports.getAllDoctors = async (req, res) => {
   try {
     const doctors = await Doctor.find({}, "-password -medicalCertificate"); // exclude sensitive info
@@ -147,6 +151,7 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
+// Fetches the booked appointment times for a specific doctor on a given date.
 exports.getBookedTimes = async (req, res) => {
   try {
     // console.log("get booked: ", req.body)
@@ -173,6 +178,7 @@ exports.getBookedTimes = async (req, res) => {
   }
 };
 
+// Retrieves the list of patients associated with a specific doctor.
 exports.getDoctorPatients = async (req, res) => {
   try {
     const { email } = req.body;
@@ -194,6 +200,7 @@ exports.getDoctorPatients = async (req, res) => {
   }
 };
 
+// Sends an alert email to a patient.
 exports.alertPatientByEmail = async (req, res) => {
   const { email, name } = req.body;
 

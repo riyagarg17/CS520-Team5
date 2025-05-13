@@ -8,7 +8,6 @@ import doctorIcon from '../assets/doctor_icon.jpg'; // Import the image
 import { sendChatMessageWithContext } from "../api/services/chatbotService"; // Import the service for sending messages
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-// TODO: analyze how chathistory is stored, maybe store after page refresh?
 const Chatbot = () => {
   // Remove id from initial message
   const startPrompt = { sender: "bot", text: "Hello, how can I assist you today?" };

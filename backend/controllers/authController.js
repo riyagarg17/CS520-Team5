@@ -124,7 +124,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user (either patient or doctor)
+    // Attempt to find the user, checking both Patient and Doctor collections
     let user = await Patient.findOne({ email });
     let userType = 'patient';
 
@@ -137,16 +137,16 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Verify password
+    // Verify the provided password against the stored hashed password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Send MFA code
+    // If credentials are valid, send an MFA code to the user's email
     await sendMFACode(email);
 
-    // Generate temporary token for MFA verification
+    // Generate a temporary JWT token for the MFA verification step
     const tempToken = jwt.sign(
       { userId: user._id, userType, email },
       process.env.JWT_SECRET,
@@ -155,6 +155,7 @@ const login = async (req, res) => {
 
     mfaTokens.set(email, tempToken);
 
+    // Respond to the client indicating that an MFA code has been sent
     res.json({
       message: 'MFA code sent',
       email,

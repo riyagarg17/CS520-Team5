@@ -9,12 +9,14 @@ import AlertBanner from "../components/AlertBanner";
 
 const { Title, Text } = Typography;
 
+// getGenderBasedAvatar: Generates a random avatar URL based on gender and an index for variety.
 const getGenderBasedAvatar = (gender, index) => {
     const base = gender?.toLowerCase() === "male" ? "men" : "women";
     const num = (index * 13) % 100;
     return `https://randomuser.me/api/portraits/${base}/${num}.jpg`;
 };
 
+// ScheduleAppointment component: Allows patients to find doctors and book appointments.
 const ScheduleAppointment = () => {
     const [doctorsList, setDoctorsList] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,6 +28,7 @@ const ScheduleAppointment = () => {
     const [alert, setAlert] = useState({ type: null, message: "" });
     const { user } = useUserContext();
 
+    // useEffect hook to fetch the list of all doctors when the component mounts.
     useEffect(() => {
         const fetchDoctors = async () => {
             try {
@@ -42,6 +45,7 @@ const ScheduleAppointment = () => {
         fetchDoctors();
     }, []);
 
+    // useEffect hook to fetch unavailable (booked) times for a selected doctor and date.
     useEffect(() => {
         const fetchUnavailableTimes = async () => {
             if (!selectedDoctor || !selectedDate) return;
@@ -58,11 +62,13 @@ const ScheduleAppointment = () => {
         fetchUnavailableTimes();
     }, [selectedDoctor, selectedDate]);
 
+    // showAlert: Displays an alert banner for a short duration.
     const showAlert = (type, message) => {
         setAlert({ type, message });
         setTimeout(() => setAlert({ type: null, message: "" }), 5000);
     };
 
+    // handleOpenModal: Opens the booking modal for a selected doctor and resets date/time selections.
     const handleOpenModal = (doctor) => {
         setSelectedDoctor(doctor);
         setVisibleModal(true);
@@ -71,6 +77,7 @@ const ScheduleAppointment = () => {
         setUnavailableTimes([]);
     };
 
+    // handleBook: Submits the appointment booking request to the backend.
     const handleBook = async () => {
         if (!selectedDate || !selectedTime) return;
 
@@ -91,6 +98,7 @@ const ScheduleAppointment = () => {
         }
     };
 
+    // getDisabledHours: Calculates and returns an array of hours that are already booked for the selected date.
     const getDisabledHours = () => {
         if (!unavailableTimes || unavailableTimes.length === 0) return [];
 

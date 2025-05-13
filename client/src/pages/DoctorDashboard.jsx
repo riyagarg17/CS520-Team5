@@ -21,6 +21,7 @@ import ZonePieChart from "./ZonePieChart";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
+// DoctorDashboard component: Displays an overview of a doctor's patients, their health zones, and allows for alerts.
 const DoctorDashboard = () => {
     const { user } = useUserContext();
     const [patients, setPatients] = useState([]);
@@ -31,6 +32,7 @@ const DoctorDashboard = () => {
     const [showAnalytics, setShowAnalytics] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    // useEffect hook to fetch the list of patients for the logged-in doctor.
     useEffect(() => {
         const fetchPatients = async () => {
             try {
@@ -48,6 +50,7 @@ const DoctorDashboard = () => {
         fetchPatients();
     }, [user.email]);
 
+    // getZoneStats: Calculates statistics about patient health zones (Red, Yellow, Green) and average health metrics.
     const getZoneStats = () => {
         const counts = { Red: 0, Yellow: 0, Green: 0 };
         let totalGlucose = 0, totalBMI = 0, totalInsulin = 0, totalBP = 0;
@@ -83,6 +86,7 @@ const DoctorDashboard = () => {
         };
     };
 
+    // filterByZone: Filters the displayed patient list based on the selected health zone.
     const filterByZone = (zone) => {
         setSelectedZone(zone);
         if (zone === "All") {
@@ -94,16 +98,19 @@ const DoctorDashboard = () => {
         }
     };
 
+    // showPatientDetails: Opens a modal to display detailed information about a selected patient.
     const showPatientDetails = (patient) => {
         setSelectedPatient(patient);
         setIsModalOpen(true);
     };
 
+    // closeModal: Closes the patient details modal.
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedPatient(null);
     };
 
+    // hashEmailToNumber: Creates a pseudo-random number from an email string for avatar generation.
     const hashEmailToNumber = (email) => {
         let hash = 0;
         for (let i = 0; i < email.length; i++) {
