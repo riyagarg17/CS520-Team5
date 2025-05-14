@@ -1,3 +1,8 @@
+/**
+ * Chatbot service handling communication with the AI chatbot backend.
+ * Manages message history and context for personalized responses.
+ */
+
 import fetchClient from "../client";
 import { ENDPOINTS } from "../endpoint";
 

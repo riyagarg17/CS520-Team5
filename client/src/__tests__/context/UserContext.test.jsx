@@ -1,3 +1,9 @@
+/**
+ * Test suite for User Context provider and consumer functionality.
+ * Tests user state management, updates, and persistence across component renders.
+ * Validates the authentication context behavior throughout the application.
+ */
+
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { UserContext, UserProvider } from '../../context/UserContext';
@@ -17,6 +23,11 @@ jest.mock('../../context/UserContext', () => {
     return { UserContext, UserProvider };
 });
 
+/**
+ * Main test suite for User Context functionality.
+ * Verifies state initialization, updates, and persistence
+ * for user authentication and profile management.
+ */
 describe('UserContext', () => {
     const mockUser = {
         email: 'test@example.com',

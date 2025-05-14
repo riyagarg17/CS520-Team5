@@ -37,7 +37,6 @@ const getDoctorAppointments = new DynamicTool({
     const url = `${API_BASE_URL}/doctors/appointments/${email}`;
     try {
       const response = await fetchClient(url, { method: "GET" });
-      console.log("Fetched appointments:", response);
 
       if (!response || response.length === 0) {
         return "No appointments found for this doctor, or there was an issue retrieving them.";
@@ -84,7 +83,6 @@ const updateDoctorAppointmentTool = new DynamicTool({
         method: "PUT", // Assuming PUT method for updates
         body: JSON.stringify(body),
       });
-      console.log("Appointment cancellation response:", response);
       // Assuming the API returns a message on success
       return response.message || "Appointment cancelled successfully.";
     } catch (error) {
@@ -105,7 +103,6 @@ const getPatientAppointmentsTool = new DynamicTool({
     try {
       // Patient controller returns { status_code, body }
       const response = await fetchClient(url, { method: "GET" }); 
-      console.log("Fetched patient appointments response:", response);
 
       // Check if the body exists and has appointments
       if (!response || !response.body || response.body.length === 0) {

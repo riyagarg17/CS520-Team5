@@ -1,3 +1,8 @@
+/**
+ * Chatbot controller managing AI-powered chat interactions for both doctors and patients.
+ * Integrates with OpenAI's GPT model for intelligent responses and data analysis.
+ */
+
 // filepath: /Users/samonuallain/CS520-Team5/backend/controllers/chatbotController.js
 require('dotenv').config();
 

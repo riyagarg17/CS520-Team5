@@ -1,3 +1,8 @@
+/**
+ * Patient controller handling patient-specific operations including health metrics,
+ * appointment scheduling, and profile management. Manages patient data and interactions.
+ */
+
 const bcrypt = require('bcrypt');
 const Patient = require('../models/patient');
 const Doctor = require('../models/Doctor');
@@ -8,11 +13,9 @@ const { predictRisk } = require('../utils/modelPredictor');
 exports.registerPatient = async (req, res) => {
   try {
     const { email, name, dob, gender, password, pincode } = req.body;
-    console.log("Incoming body:", req.body);
 
     const existingPatient = await Patient.findOne({ email: email });
     if (existingPatient) {
-      console.log("Patient already exists", existingPatient);
       return res.status(400).json({ message: 'Email already registered', status_code: 400 });
     }
 
@@ -42,7 +45,6 @@ exports.registerPatient = async (req, res) => {
 
 exports.updateHealthDetails = async (req, res) => {
   const { email, health_details } = req.body;
-  console.log("Update details: ", req.body)
   try {
     // Get risk prediction
     const zone = await predictRisk(health_details);
@@ -77,20 +79,17 @@ exports.updateHealthDetails = async (req, res) => {
 exports.getHealthDetails = async (req, res) => {
   try {
     const { email } = req.body;
-    console.log("Getting health details for email:", email);
     
     if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
 
     const patient = await Patient.findOne({ email });
-    console.log("Found patient:", patient);
 
     if (!patient) {
       return res.status(404).json({ message: "Patient not found." });
     }
 
-    console.log("Sending health details:", patient.health_details);
     res.status(200).json({ health_details: patient.health_details || {} });
   } catch (error) {
     console.error("Error fetching health details:", error);
@@ -201,7 +200,6 @@ exports.scheduleAppointment = async (req, res) => {
 
 exports.updateAppointment = async (req, res) => {
   try {
-    console.log("update appointment: ", req.body)
     const { appointment_id, new_date, new_time, status } = req.body;
 
     if (!appointment_id) {

@@ -1,3 +1,8 @@
+/**
+ * Patient service managing API calls for patient-related operations.
+ * Handles health metrics updates, appointment scheduling, and patient profile management.
+ */
+
 import fetchClient from "../client";
 import { ENDPOINTS } from "../endpoint";
 

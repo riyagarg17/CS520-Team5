@@ -1,70 +1,188 @@
-# Getting Started with Create React App
+# CareCompass Frontend Documentation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+CareCompass is a healthcare management system built with React, focusing on providing an intuitive interface for both patients and healthcare providers. The application uses modern React practices, including hooks, context, and a component-based architecture.
 
-## Available Scripts
+## Technology Stack
+- **React 18**: Core framework
+- **Ant Design 5.x**: UI component library
+- **React Router 6**: Navigation and routing
+- **Axios**: HTTP client
+- **Chart.js**: Data visualization
+- **Lottie**: Animations
+- **Jest & React Testing Library**: Testing framework
 
-In the project directory, you can run:
+## Architecture
 
-### `npm start`
+### Component Structure
+```
+src/
+├── components/           # Reusable UI components
+│   ├── common/          # Generic components (buttons, inputs)
+│   ├── layout/          # Layout components
+│   └── features/        # Feature-specific components
+├── pages/               # Page components
+│   ├── auth/           # Authentication pages
+│   ├── doctor/         # Doctor dashboard and related pages
+│   └── patient/        # Patient dashboard and related pages
+└── context/            # Global state management
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### State Management
+- **UserContext**: Manages user authentication state and profile
+- **Local State**: Component-specific state using useState
+- **Form State**: Managed by Ant Design Form components
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Key Features
 
-### `npm test`
+### Authentication System
+- Secure login/registration for both doctors and patients
+- Password strength validation
+- MFA (Multi-Factor Authentication) support
+- Session management using JWT tokens
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Doctor Dashboard
+- Patient list with health zone indicators
+- Real-time analytics and statistics
+- Patient health monitoring
+- Alert system for critical cases
+- Appointment management
 
-### `npm run build`
+### Patient Dashboard
+- Health metrics tracking
+- Appointment scheduling
+- Health zone status
+- Medical history view
+- Interactive health data visualization
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Implementation Details
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Authentication Flow
+```javascript
+// Example of login flow
+const handleLogin = async (values) => {
+    try {
+        const response = await loginUser(values);
+        if (response.requiresMFA) {
+            // Handle MFA flow
+            setShowMFA(true);
+            setTempToken(response.tempToken);
+        } else {
+            // Direct login
+            setUser(response.userData);
+            navigate(response.userData.role === 'doctor' ? '/doctor' : '/patient');
+        }
+    } catch (error) {
+        handleError(error);
+    }
+};
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Health Zone Classification
+The system uses three health zones:
+- 🔴 **Red Zone**: Critical attention needed
+- 🟡 **Yellow Zone**: Monitoring required
+- 🟢 **Green Zone**: Healthy status
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### API Integration
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Authentication Endpoints
+```javascript
+POST /doctors/login          // Doctor login
+POST /patients/login         // Patient login
+POST /mfa/verifyOtp         // Verify MFA code
+POST /mfa/generateQrCode    // Generate MFA QR code
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+#### Doctor Endpoints
+```javascript
+POST /doctors/addDoctor              // Register new doctor
+GET  /doctors/getAllDoctors          // Get all doctors
+GET  /doctors/appointments/:email    // Get doctor's appointments
+PUT  /doctors/appointments/:id/status // Update appointment status
+POST /doctors/getPatients           // Get doctor's patients
+POST /doctors/getBookedTimes        // Get doctor's booked times
+POST /doctors/doctor/doctorSchedule // Set doctor availability
+POST /doctors/alert-patient         // Send alert to patient
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### Patient Endpoints
+```javascript
+POST /patients/addPatient           // Register new patient
+POST /patients/updatePatient        // Update patient info
+POST /patients/healthDetails        // Get patient health details
+GET  /patients/appointments         // Get patient appointments
+POST /patients/appointmentUpdate    // Update appointment
+POST /patients/scheduleAppointment  // Schedule new appointment
+```
 
-## Learn More
+#### Chatbot Endpoints
+```javascript
+POST /chat/sendMessage    // Send message to chatbot
+POST /chat/generate      // Generate chatbot response
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Unit Tests
+- Component testing using React Testing Library
+- API mocking with Jest
+- Context testing
 
-### Analyzing the Bundle Size
+```javascript
+// Example test
+describe('PatientDashboard', () => {
+    it('displays health metrics correctly', () => {
+        render(<PatientDashboard />);
+        expect(screen.getByText('Blood Glucose')).toBeInTheDocument();
+        expect(screen.getByText('BMI')).toBeInTheDocument();
+    });
+});
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Integration Tests
+- User flow testing
+- Form submission testing
+- Route navigation testing
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### API Error Handling
+- Centralized error handling
+- User-friendly error messages
+- Error logging and monitoring
 
-### `npm run build` fails to minify
+## Build and Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Development
+```bash
+npm install        # Install dependencies
+npm start         # Start development server
+npm test          # Run tests
+npm run lint      # Run linting
+```
+
+### Production
+```bash
+npm run build     # Create production build
+```
+
+
+## Future Improvements
+
+
+1. **Features**
+   - Real-time chat
+   - Video consultations
+   - Health report generation
+
+2. **UX Improvements**
+   - Enhanced animations
+   - Offline support
+   - Accessibility improvements

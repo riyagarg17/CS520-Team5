@@ -1,3 +1,9 @@
+/**
+ * Test suite for the Doctor Dashboard component.
+ * Tests the main interface for doctors including patient list display,
+ * health zone visualization, and alert functionality.
+ */
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DoctorDashboard from '../../pages/DoctorDashboard';
@@ -32,6 +38,11 @@ const renderWithRouter = (ui, { route = '/' } = {}) => {
     return render(ui, { wrapper: BrowserRouter });
 };
 
+/**
+ * Main test suite for Doctor Dashboard functionality.
+ * Verifies patient data display, zone chart integration,
+ * and error handling for API interactions.
+ */
 describe('DoctorDashboard Component', () => {
     const mockPatients = [
         {
