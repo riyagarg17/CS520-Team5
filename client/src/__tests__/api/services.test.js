@@ -1,3 +1,8 @@
+/**
+ * Test suite for API service functions handling doctor and patient operations.
+ * Tests cover API interactions for health metrics, patient management, and alerts.
+ */
+
 import {
     getDoctorPatients,
     alertPatient
@@ -24,6 +29,10 @@ describe('API Services', () => {
         jest.clearAllMocks();
     });
 
+    /**
+     * Tests for doctor's patient list retrieval functionality.
+     * Verifies successful fetching and error handling.
+     */
     describe('getDoctorPatients', () => {
         const mockPatients = [
             { email: 'patient1@test.com', name: 'Patient One' },

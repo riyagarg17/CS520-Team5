@@ -1,3 +1,9 @@
+/**
+ * Test suite for the Zone Pie Chart component.
+ * Tests the visualization of patient health zones distribution
+ * including data handling, rendering, and layout specifications.
+ */
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ZonePieChart from '../../pages/ZonePieChart';
@@ -7,6 +13,11 @@ jest.mock('react-chartjs-2', () => ({
     Pie: () => <div data-testid="pie-chart">Pie Chart</div>
 }));
 
+/**
+ * Main test suite for Zone Pie Chart functionality.
+ * Verifies chart rendering, data processing, and error handling
+ * for various patient zone distributions.
+ */
 describe('ZonePieChart Component', () => {
     const mockPatients = [
         { health_details: { zone: 'Red' } },

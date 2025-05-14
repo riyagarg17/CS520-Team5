@@ -1,3 +1,8 @@
+/**
+ * Authentication controller handling user login, registration, and MFA operations.
+ * Manages both doctor and patient authentication flows with JWT token generation and verification.
+ */
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Doctor = require('../models/Doctor');
@@ -121,7 +126,6 @@ const loginUser = async (Model, req, res) => {
         email,
         requiresMFA: true
       };
-      console.log('Sending response:', response);
       res.json(response);
   
     } catch (error) {
@@ -162,7 +166,7 @@ const login = async (req, res) => {
     // Generate a temporary JWT token for the MFA verification step
     const tempToken = jwt.sign(
       { userId: user._id, userType, email },
-      process.env.JWT_SECRET, 
+      process.env.JWT_SECRET,
       { expiresIn: '5m' }
     );
 

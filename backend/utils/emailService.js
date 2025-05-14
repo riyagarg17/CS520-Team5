@@ -19,7 +19,6 @@ const sendEmail = async (to, subject, text) => {
   }
 };
 
-module.exports = sendEmail;
 
 const sendAlertEmail = async (to, patientName) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -41,4 +40,4 @@ const sendAlertEmail = async (to, patientName) => {
   }
 };
 
-module.exports = { sendAlertEmail };
+module.exports = { sendEmail, sendAlertEmail };

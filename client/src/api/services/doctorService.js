@@ -1,3 +1,8 @@
+/**
+ * Doctor service handling all API interactions for doctor-specific operations.
+ * Manages appointments, patient lists, and doctor profile operations.
+ */
+
 import { API_BASE_URL } from "../endpoint";
 import fetchClient from "../client";
 import { ENDPOINTS } from "../endpoint";

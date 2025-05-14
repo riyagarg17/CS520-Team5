@@ -1,14 +1,16 @@
+/**
+ * Doctor controller managing all doctor-related operations including registration,
+ * appointment management, patient list retrieval, and alert notifications.
+ */
+
 const bcrypt = require('bcrypt');
 const Doctor = require('../models/Doctor');
 const Patient = require('../models/patient');
-const sendEmail = require('../utils/emailService')
-const { sendAlertEmail } = require("../utils/emailService");
+const { sendEmail, sendAlertEmail } = require("../utils/emailService");
 
 // Handles the registration of a new doctor.
 // It checks for existing users, hashes the password, and saves the doctor to the database.
 exports.registerDoctor = async (req, res) => {
-  // console.log("BODY:", req.body);
-  // console.log("FILES:", req.file);
   try {
     const {
       name,
@@ -79,7 +81,6 @@ exports.getDoctorAppointments = async (req, res) => {
       return res.status(404).json({ message: "Doctor not found" });
     }
 
-    console.log("DOCTOR appt;", doctor.appointments || [])
     res.status(200).json(doctor.appointments || []);
   } catch (error) {
     console.error("Error fetching doctor appointments:", error);
@@ -91,11 +92,8 @@ exports.getDoctorAppointments = async (req, res) => {
 // If the status is "Cancelled", it removes the appointment.
 exports.updateAppointmentStatus = async (req, res) => {
   try {
-    // console.log("Change doctor appt status: ", req.body)
     const { appointment_id } = req.params;
     const { newStatus, doctorEmail, patientEmail } = req.body;
-    console.log("Received appointment_id:", appointment_id);
-    // console.log(doctorEmail,patient_email)
 
     if (newStatus === "Cancelled") {
       // Remove from doctor's appointments
@@ -110,7 +108,7 @@ exports.updateAppointmentStatus = async (req, res) => {
         { $pull: { appointments: { appointment_id } } }
       );
       // Uncomment only in prod 
-      // sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
+      sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
       return res.status(200).json({ message: "Appointment cancelled and removed" });
     }
     
@@ -132,7 +130,7 @@ exports.updateAppointmentStatus = async (req, res) => {
       patientUpdate
     });
     // Uncomment only in prod 
-    // sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
+    sendEmail(patientEmail, "Appointment Status changed", `Your appointment has been ${newStatus}`)
   } catch (error) {
     console.error("Error updating appointment status:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -154,7 +152,6 @@ exports.getAllDoctors = async (req, res) => {
 // Fetches the booked appointment times for a specific doctor on a given date.
 exports.getBookedTimes = async (req, res) => {
   try {
-    // console.log("get booked: ", req.body)
     const { doctorEmail, appointment_date } = req.body;
 
     if (!doctorEmail || !appointment_date) {

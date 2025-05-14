@@ -23,7 +23,6 @@ The project focuses on tracking key health metrics, performing simple analytics,
 - **Appointments Management**: Doctors can schedule and delete appointments with specific times and dates for each patient.
 
 ## Installation & Setup
-To set up and run the project, follow these steps:
 
 1. **Clone the Repository**
    ```sh
@@ -31,7 +30,24 @@ To set up and run the project, follow these steps:
    cd CS520-Team5
    ```
 
-2. **Set up Python Virtual Environment**
+2. **Frontend Setup**
+   ```sh
+   # Navigate to client directory
+   cd client
+
+   # Install dependencies
+   npm install
+
+   # Start the development server
+   npm start
+   ```
+
+   The frontend will be available at `http://localhost:3000`
+
+3. **Backend Setup**
+
+   Setup the virtual environment first: 
+
    ```sh
    # Option 1: Using the setup script
    ./setup.sh
@@ -41,33 +57,31 @@ To set up and run the project, follow these steps:
    source venv/bin/activate
    pip install -r requirements.txt
    ```
-
-3. **Install Node.js Dependencies**
    ```sh
-   npm install 
-   ```
+   # Navigate to backend directory
+   cd backend
 
-4. **Configure Environment Variables**
-   Create a `.env` file in the `backend` directory with the following variables:
-   ```env
-   # MongoDB Connection
+   # Install dependencies
+   npm install
+
+   # Configure environment variables
+   # Create a .env file with the following:
    MONGODB_URI=your_mongodb_uri
-
-   # JWT Secret
+   PORT=backend_port
+   SENDGRID_API_KEY=sendgrid_api_key
+   SENDGRID_VERIFIED_SENDER=riyagarg8d@gmail.com
    JWT_SECRET=your_jwt_secret
+   EMAIL_USER=your_email
+   EMAIL_PASSWORD=your_email_password
+   OPENAI_API_KEY=your_openai_key
 
-   # MFA Configuration
-   MFA_SECRET=your_mfa_secret
-   MFA_ISSUER=CareCompass
-   MFA_ALGORITHM=sha1
-   MFA_DIGITS=6
-   MFA_PERIOD=30
+   # Start the server
+   node app.js
    ```
 
-5. **Run the Application**
-   ```sh
-   npm run
-   ```
+   The backend will be available at `http://localhost:8080`
+
+Contact the dev team for the required environment variables and credentials.
 
 ## Usage
 - Log in with your registered credentials.
@@ -89,5 +103,5 @@ To set up and run the project, follow these steps:
 For any issues or further assistance, contact the development team.
 
 ---
-**Note**: Ensure all patient data is handled securely and follows relevant privacy regulations.
+
 
